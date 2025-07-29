@@ -80,12 +80,12 @@ void Delegate::paint(QPainter *painter, const QStyleOptionViewItem &option, cons
 
     if (!icon.isNull() && isIconic) {
     QPixmap pixmap = icon.pixmap(IconSize);
-    iconY = fullRec.y() + (fullRec.height() - pixmap.height()) / 2;
+    iconY = fullRec.y() + (fullRec.height() - IconSize.height()) / 2;
     painter->drawPixmap(iconX, iconY, pixmap);
     }
 
     if (shortcutText.isEmpty() && hasSubMenu) {
-    QPixmap pixmap("C:/Users/umara/Pictures/U-Converter/chevron-right.svg");
+    QPixmap pixmap(":/Assets/Icons/chevron-right.svg");
     pixmap = pixmap.scaled(IconSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     iconY = fullRec.y() + (fullRec.height() - pixmap.height()) / 2;
     painter->drawPixmap(fullRec.right() - IconSize.width() - 12, iconY, pixmap);
