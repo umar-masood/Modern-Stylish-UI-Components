@@ -16,6 +16,7 @@ RoundedBox::RoundedBox(const QString &txt, QWidget *parent)
 void RoundedBox::setDarkMode(bool value)
 {
     isDarkMode = value;
+    update();
 }
 
 void RoundedBox::setAsToolTip(bool value) {
@@ -42,16 +43,6 @@ QSize RoundedBox::sizeHint() const {
 void RoundedBox::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event);
-
-    // Rounded mask
-    QBitmap bitmap(width(), height());
-    bitmap.fill(Qt::color0);
-    QPainter maskPainter(&bitmap);
-    maskPainter.setRenderHints(QPainter::Antialiasing);
-    QPainterPath maskPath;
-    maskPath.addRoundedRect(rect(), 6, 6);
-    maskPainter.fillPath(maskPath, Qt::color1);
-    setMask(bitmap);
 
     // Colors
     QColor BG = isDarkMode ? QColor("#1F1F1F") : QColor("#FFFFFF");
