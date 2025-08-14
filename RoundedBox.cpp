@@ -16,6 +16,7 @@ RoundedBox::RoundedBox(const QString &txt, QWidget *parent)
 void RoundedBox::setDarkMode(bool value)
 {
     isDarkMode = value;
+    update();
 }
 
 void RoundedBox::setAsToolTip(bool value) {
@@ -45,13 +46,13 @@ void RoundedBox::paintEvent(QPaintEvent *event)
 
     // Colors
     QColor BG = isDarkMode ? QColor("#1F1F1F") : QColor("#FFFFFF");
-    QColor BR = isDarkMode ? QColor("#4D4D4D") : QColor("#CCCCCC");
+    QColor BR = "#AFAFAF";
 
     QPainter painter(this);
     painter.setRenderHints(QPainter::Antialiasing);
     painter.setBrush(BG);
     QPen pen(BR);
-    pen.setWidth(1);
+    pen.setWidthF(0.5);
     painter.setPen(pen);
 
     QPainterPath path;
