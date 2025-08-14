@@ -76,5 +76,3 @@ private:
   QString unicodeIcon;
   int unicodeIconSize = 16;
 };
-
-#endif
