@@ -1,9 +1,39 @@
 #include "Dialog.h"
 
+Overlay::Overlay(QWidget *parent) : QWidget(parent) {
+   setWindowFlags(Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
+   setAttribute(Qt::WA_TranslucentBackground);
+   setAttribute(Qt::WA_TransparentForMouseEvents, false);
+}
+
+void Overlay::paintEvent(QPaintEvent *event)
+{
+   Q_UNUSED(event);
+
+   // Colors
+   QColor BG = QColor(0, 0, 0, 120);
+
+   QPainter painter(this);
+   painter.setRenderHints(QPainter::Antialiasing);
+   painter.setBrush(BG);
+   painter.setPen(Qt::NoPen);
+
+   QPainterPath path;
+   path.addRoundedRect(rect().adjusted(1.5, 1.5, -1.5, -1.5), 6, 6);
+   painter.drawPath(path);
+}
+
 Dialog::Dialog(QWidget *parent) : RoundedBox("", parent)
 {
-   setWindowFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::NoDropShadowWindowHint);
+   setWindowFlag(Qt::WindowStaysOnTopHint);
    setWindowModality(Qt::ApplicationModal);
+
+   if (parent) {
+      overlay = new Overlay(parent);
+      overlay->setGeometry(parent->rect());
+      overlay->hide();
+      parent->installEventFilter(this); 
+   }
 }
 
 void Dialog::setText(const QString &text)
@@ -45,12 +75,6 @@ void Dialog::setDarkMode(bool value)
    RoundedBox::setDarkMode(value);
 }
 
-void Dialog::setUninteractiveWidgets(QWidget *mainContent, QWidget *titleBar)
-{
-   contentWidget = mainContent;
-   titleBarWidget = titleBar;
-}
-
 void Dialog::centerInParent()
 {
    if (parentWidget())
@@ -65,19 +89,6 @@ void Dialog::centerInParent()
    }
 }
 
-void Dialog::disableWidgets()
-{
-   if (contentWidget) contentWidget->setEnabled(false);
-   if (titleBarWidget) titleBarWidget->setEnabled(false);
-}
-
-
-void Dialog::enableWidgets()
-{ 
-   if (contentWidget) contentWidget->setEnabled(true);
-   if (titleBarWidget) titleBarWidget->setEnabled(true);
-}
-
 void Dialog::showEvent(QShowEvent *event)
 {
    if (!setupDone)
@@ -85,22 +96,38 @@ void Dialog::showEvent(QShowEvent *event)
       setup();
       setupDone = true;
    }
-   disableWidgets();
+
+   if (overlay)
+   {
+      overlay->setGeometry(parentWidget()->rect());
+      overlay->show();
+      overlay->raise();
+   }
+
    centerInParent();
+   this->raise();
    RoundedBox::showEvent(event);
 }
 
 void Dialog::resizeEvent(QResizeEvent *event)
 {
-   centerInParent();
+   if (overlay) overlay->setGeometry(parentWidget()->rect());
    RoundedBox::resizeEvent(event);
 }
 
 void Dialog::closeEvent(QCloseEvent *event)
 {
-   enableWidgets();
-   centerInParent();
+   if (overlay) overlay->hide();
    RoundedBox::closeEvent(event);
+}
+
+bool Dialog::eventFilter(QObject *obj, QEvent *event)
+{
+   if (obj == parentWidget() && overlay)
+      if (event->type() == QEvent::Resize || event->type() == QEvent::Move)
+          overlay->setGeometry(parentWidget()->rect());
+   
+   return RoundedBox::eventFilter(obj, event);
 }
 
 void Dialog::setup()
