@@ -151,3 +151,14 @@ void SpinnerProgress::paintEvent(QPaintEvent *event) {
       painter.drawText(rec, Qt::AlignHCenter | Qt::AlignVCenter, percentText); 
    }
 }
+
+void SpinnerProgress::showEvent(QShowEvent * event)
+{
+   QWidget::showEvent(event);
+
+   if (parentWidget()) {
+      int x = (parentWidget()->width() - width()) / 2;
+      int y = (parentWidget()->height() - height()) / 2;
+      move(x, y);
+   }
+}
