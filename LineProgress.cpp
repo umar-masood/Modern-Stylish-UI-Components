@@ -3,6 +3,7 @@
 
 LineProgress::LineProgress(QWidget *parent) : QWidget(parent) {
    hide();   
+   setAttribute(Qt::WA_TranslucentBackground, true);
 
    op = new SmoothOpacity;
    setGraphicsEffect(op);    
