@@ -9,6 +9,15 @@
 #include <QApplication>
 #include <QShowEvent>
 
+class Overlay : public QWidget {
+   Q_OBJECT
+   public:
+   explicit Overlay(QWidget *parent = nullptr);
+
+   protected:
+   void paintEvent(QPaintEvent *event) override;
+};
+
 class Dialog : public RoundedBox
 {
    Q_OBJECT
@@ -22,7 +31,6 @@ public:
    void setIconSize(QSize s);
    void setSize(QSize s);
    void setDarkMode(bool value);
-   void setUninteractiveWidgets(QWidget *mainContent, QWidget *titleBar);
 
 signals:
    void onDialogButtonClicked();
@@ -31,16 +39,16 @@ protected:
    void showEvent(QShowEvent *event) override;
    void resizeEvent(QResizeEvent *event) override;
    void closeEvent(QCloseEvent *event) override;
+   bool eventFilter(QObject* obj, QEvent* event) override;
    
 private:
    void setup();
    void centerInParent();
-   void disableWidgets();
-   void enableWidgets();
    void applyStyleSheet();
 
    QWidget *contentWidget = nullptr;
    QWidget *titleBarWidget = nullptr;
+   Overlay *overlay = nullptr;
 
    QPixmap pixmap(const QString &iconLight, const QString &iconDark, QSize s);
    bool isDarkMode = false;
