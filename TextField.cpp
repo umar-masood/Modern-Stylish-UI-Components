@@ -20,15 +20,15 @@ void TextField::setDarkMode(bool value) {
 }
 
 void TextField::setSize(QSize s) {
-    const QSize minimumSize(200, 36);
-    if (s.height() < minimumSize.height() || s.width() < minimumSize.width()) {
-        setFixedSize(minimumSize);
-    } else if (s.height() > minimumSize.height() || s.width() > minimumSize.width()) {
-        setFixedSize(s.width(), minimumSize.height());
-    } else {
-        setFixedSize(minimumSize);
-    }
+    const int fixedHeight = 36;
+    const int minWidth = 200;
+
+    int finalWidth = std::max(s.width(), minWidth);
+    int finalHeight = fixedHeight;
+
+    setFixedSize(finalWidth, finalHeight);
 }
+
 
 void TextField::setTextFieldIcon(bool value) {
     textFieldIcon = value;
@@ -36,8 +36,7 @@ void TextField::setTextFieldIcon(bool value) {
 }
 
 void TextField::setTextFieldIconSize(QSize s) {
-    if (textFieldIcon)
-        textFieldIconSize = s;
+    if (textFieldIcon) textFieldIconSize = s;
 }
 
 void TextField::setIconPaths(const QString &light_icon_path, const QString &dark_icon_path) {
@@ -73,7 +72,7 @@ void TextField::setClearButton(bool value) {
     if (clearButton && !clear) {
         clear = new Button("", this);
         clear->setShadow(false);
-        clear->setDisplayMode(Button::TextFieldButton);
+        clear->setDisplayMode(Button::IconOnly);
         clear->setIconSize(this->textFieldIconSize);
         clear->setSize(QSize(28, 28));
         clear->setIconPaths(":/Assets/Icons/x.svg",":/Assets/Icons/x.svg");
@@ -103,7 +102,7 @@ void TextField::setPasswordTextField(bool value) {
     if (passwordButton && !password && !clearButton) {
         password = new Button("", this);
         password->setShadow(false);
-        password->setDisplayMode(Button::TextFieldButton);
+        password->setDisplayMode(Button::IconOnly);
         password->setIconSize(this->textFieldIconSize);
         password->setSize(QSize(28, 28));
         password->setEnabled(isEnabled);
@@ -166,7 +165,7 @@ void TextField::paintEvent(QPaintEvent *event) {
     QRect rec = rect().adjusted(1, 1, -1, -1);
 
     QPen pen;
-    pen.setWidthF(isFocused ? 1.5 : 1.0);
+    pen.setWidthF(isFocused ? 1.0 : 0.5);
     pen.setColor(isFocused ? QColor("#109AC7") : (isDarkMode ? QColor("#4D4D4D") : QColor("#CCCCCC")));
     pen.setStyle(Qt::SolidLine);
     pen.setJoinStyle(Qt::RoundJoin);
@@ -253,17 +252,17 @@ void TextField::contextMenuEvent(QContextMenuEvent *event) {
     const bool hasText = !this->text().isEmpty();
     const bool hasSelection = this->hasSelectedText();
 
-    if (hasSelection) menu->addAction({ "Copy", false, ":/copy_light.svg", ":/copy.svg", "Ctrl + C" });
-    if (hasSelection) menu->addAction({ "Cut", false, ":/cut_light.svg", ":/cut.svg", "Ctrl + X" });
+    if (hasSelection) menu->addAction({ "Copy", false, ":/Assets/Icons/copy_light.svg", ":/Assets/Icons/copy.svg", "Ctrl + C" });
+    if (hasSelection) menu->addAction({ "Cut", false, ":/Assets/Icons/cut_light.svg", ":/Assets/Icons/cut.svg", "Ctrl + X" });
     
-    menu->addAction({ "Paste", false, ":/clipboard_light.svg", ":/clipboard.svg", "Ctrl + V" });
+    menu->addAction({ "Paste", false, ":/Assets/Icons/clipboard_light.svg", ":/Assets/Icons/clipboard.svg", "Ctrl + V" });
     
-    if (hasSelection) menu->addAction({ "Delete", false, ":/delete_light.svg", ":/delete.svg", "Delete" });
+    if (hasSelection) menu->addAction({ "Delete", false, ":/Assets/Icons/delete_light.svg", ":/Assets/Icons/delete.svg", "Delete" });
     
-    if (hasText && !hasSelection) menu->addAction({ "Select All", false, ":/select-all_light.svg", ":/select-all.svg", "Ctrl + A" });
+    if (hasText && !hasSelection) menu->addAction({ "Select All", false, ":/Assets/Icons/select-all_light.svg", ":/Assets/Icons/select-all.svg", "Ctrl + A" });
     
-    if (this->isUndoAvailable()) menu->addAction({ "Undo", false, ":/undo_light.svg", ":/undo.svg", "Ctrl + Z" });
-    if (this->isRedoAvailable()) menu->addAction({ "Redo", false, ":/redo_light.svg", ":/redo.svg", "Ctrl + Y" });
+    if (this->isUndoAvailable()) menu->addAction({ "Undo", false, ":/Assets/Icons/undo_light.svg", ":/Assets/Icons/undo.svg", "Ctrl + Z" });
+    if (this->isRedoAvailable()) menu->addAction({ "Redo", false, ":/Assets/Icons/redo_light.svg", ":/Assets/Icons/redo.svg", "Ctrl + Y" });
 
     connect(menu, &Menu::itemClicked, this, [=]() {
         QString action = menu->clickedItemText();
@@ -283,9 +282,10 @@ void TextField::contextMenuEvent(QContextMenuEvent *event) {
 
 void TextField::init() {
     setSize(QSize(0, 0));
+    setFocusPolicy(Qt::TabFocus);
+    setFocusPolicy(Qt::ClickFocus);
     updateStyle();
     
-
     effect = new SmoothDropShadow(this);
     effect->setOffset(0, 0);
     effect->setColor(QColor(0, 0, 0, 0));
