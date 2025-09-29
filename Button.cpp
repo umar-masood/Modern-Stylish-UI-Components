@@ -1,19 +1,11 @@
 #include "Button.h"
 
-Button::Button(const QString &text, QWidget *parent) : QPushButton(text, parent)
-{
-  init();
-}
-
-Button::Button(QWidget *parent) : QPushButton(parent)
-{
-  init();
-}
+Button::Button(const QString &text, QWidget *parent) : QPushButton(text, parent) { init(); }
+Button::Button(QWidget *parent) : QPushButton(parent) { init(); }
 
 void Button::init()
 {
   setCursor(Qt::PointingHandCursor);
-  setMinimumSize(120, 34);
   setFocusPolicy(Qt::NoFocus);
 
   // Shadow Effect
@@ -36,10 +28,45 @@ void Button::setShadow(bool value)
   else setGraphicsEffect(nullptr);
 }
 
+void Button::setHyperLink(bool value)
+{
+  hyperLink = value;
+  if (secondary) secondary = false; 
+}
+
+void Button::setHyperLinkColors(const QColor &normalState, const QColor &hoverState)
+{
+  hyperlinkNormal = normalState; hyperlinkHover = hoverState;
+}
+
+void Button::setFontProperties(const QString &family, int pointSize, bool bold, bool italic)
+{
+  fontFamily = family; fontSize = pointSize; isBold = bold; isItalic = italic;
+}
+
+void Button::setGradientColor(bool value, const QString &hex1, const QString &hex2)
+{
+  useGradient = value;
+
+  baseStart = QColor(hex1);
+  baseEnd = QColor(hex2);
+
+  color1 = baseStart;
+  color2 = baseEnd;
+
+  update();
+}
+
+void Button::setHoverGradientColor(const QString &hex) { hoverColor = QColor(hex); }
+void Button::setStartColor(const QColor &c) { color1 = c.name(); update(); }
+void Button::setEndColor(const QColor &c) { color2 = c.name(); update(); }
+QColor Button::getStartColor() const { return QColor(color1); }
+QColor Button::getEndColor() const { return QColor(color2); }
+
 void Button::setDisplayMode(DisplayMode mode)
 {
   displayMode = mode;
-  if (displayMode == TextFieldButton) setSecondary(true);
+  if (displayMode == IconOnly) setSecondary(true);
   if (!customSize) setSize(QSize(0, 0));
   update();
 }
@@ -69,19 +96,17 @@ void Button::setSize(QSize s)
 {
   customSize = true;
 
-  const QSize Icon_text_size(120, 36);
-  const QSize Icon_only_size(36, 36);
-  const QSize Text_under_icon_size(56, 50);
-  const QSize Text_Field_Button(28, 28);
+  const QSize Icon_text(100, 36);
+  const QSize Icon_only(20, 20);
+  const QSize Text_under_icon(60, 50);
+  const QSize Text_only(100, 36);
 
   switch (displayMode)
   {
-    case IconText:         setFixedSize(s.expandedTo(Icon_text_size)); break;
-    case IconOnly:         setFixedSize(s.expandedTo(Icon_only_size)); break;
-    case ToolButton:       setFixedSize(s); break;
-    case TextUnderIcon:    setFixedSize(s.expandedTo(Text_under_icon_size)); break;
-    case TextOnly:         setFixedSize(s.expandedTo(Icon_text_size)); break;
-    case TextFieldButton:  setFixedSize(s.expandedTo(Text_Field_Button)); break;
+    case IconText:         setFixedSize(s.expandedTo(Icon_text)); break;
+    case IconOnly:         setFixedSize(s.expandedTo(Icon_only)); break;
+    case TextUnderIcon:    setFixedSize(s.expandedTo(Text_under_icon)); break;
+    case TextOnly:         setFixedSize(s.expandedTo(Icon_text)); break;
   }
   update();
 }
@@ -116,9 +141,8 @@ bool Button::isPressedState() const
   return isPressed;
 }
 
-bool Button::isToolOrFieldMode() const
-{
-  return displayMode == ToolButton || displayMode == TextFieldButton;
+bool Button::isIconOnly() const {
+  return displayMode == IconOnly;
 }
 
 void Button::paintEvent(QPaintEvent *event)
@@ -132,27 +156,27 @@ void Button::paintEvent(QPaintEvent *event)
   QColor disabledSecondaryColor = isDarkMode ? "#555555" : "#E0E0E0";
   QColor disabledPrimaryColor = "#B0E0FF";
   if (isDisabledState()) 
-    if (isToolOrFieldMode()) backgroundColor = Qt::transparent;  else  backgroundColor = (secondary) ? disabledSecondaryColor : disabledPrimaryColor;
+    if (isIconOnly()) backgroundColor = Qt::transparent;  else  backgroundColor = (secondary) ? disabledSecondaryColor : disabledPrimaryColor;
   
   QColor normalSecondaryColor = isDarkMode ? "#2D2D2D" : "#FBFBFB";
   QColor normalPrimaryColor = "#32CCFE";
-  if (isNormalState()) backgroundColor = isToolOrFieldMode() ? Qt::transparent : (secondary ? normalSecondaryColor : normalPrimaryColor);
+  if (isNormalState()) backgroundColor = isIconOnly() ? Qt::transparent : (secondary ? normalSecondaryColor : normalPrimaryColor);
 
   QColor hoverSecondaryColor = isDarkMode ? "#323232" : "#F6F6F6";
   QColor hoverPrimaryColor = "#1BB3E6";
-  if (isHoverState()) backgroundColor = (secondary || isToolOrFieldMode()) ? hoverSecondaryColor : hoverPrimaryColor;
+  if (isHoverState()) backgroundColor = (secondary || isIconOnly()) ? hoverSecondaryColor : hoverPrimaryColor;
 
   QColor pressedSecondaryColor = isDarkMode ? "#1F1F1F" : "#FFFFFF";
   QColor pressedPrimaryColor = "#109AC7";
-  if (isPressedState()) backgroundColor = (secondary || displayMode == ToolButton) ? pressedSecondaryColor : pressedPrimaryColor;
+  if (isPressedState()) backgroundColor = (secondary || isIconOnly()) ? pressedSecondaryColor : pressedPrimaryColor;
 
   // Border Colors
   QColor borderColor = isDarkMode ? "#4D4D4D" : "#CCCCCC";
   bool showBorder = false;
   if (secondary)
-    if (isToolOrFieldMode()) showBorder = false;  else  showBorder = true;
+    if (isIconOnly()) showBorder = false;  else  showBorder = true;
 
-  if (!showBorder) {
+  if (!showBorder || useGradient || hyperLink) {
     painter.setPen(Qt::NoPen);
   } else {
     QPen pen(borderColor);
@@ -162,7 +186,18 @@ void Button::paintEvent(QPaintEvent *event)
     painter.setPen(pen);
   }
 
-  painter.setBrush(backgroundColor);
+  if (useGradient)
+  {
+    QLinearGradient gradient(rect().topLeft(), rect().topRight());
+    gradient.setColorAt(0, color1);
+    gradient.setColorAt(1, color2);
+    painter.setBrush(gradient);
+  } else if (hyperLink) {
+    painter.setBrush(QBrush(Qt::NoBrush));
+  } else {
+    painter.setBrush(backgroundColor);
+  }
+
   QPainterPath path;
   path.addRoundedRect(rect().adjusted(1, 1, -1, -1), 6, 6);
   painter.drawPath(path);
@@ -185,12 +220,26 @@ void Button::paintEvent(QPaintEvent *event)
     painter.setFont(iconFont);
   } else {
     QFont font;
-    font.setPointSize(displayMode == TextUnderIcon ? 10 : 11);
-    font.setFamily("Segoe UI");
+    font.setPointSize(displayMode == TextUnderIcon ? 10 : fontSize);
+    font.setFamily(fontFamily);
+    font.setBold(isBold);
+    font.setItalic(isItalic);
     painter.setFont(font);
   }
 
-  painter.setPen(secondary ? (isDarkMode ? QColor("#F0F0F0") : QColor("#000000")) : QColor("#FFFFFF"));
+  QColor textColor;
+  if (secondary) {
+    if (isDarkMode)
+      textColor = QColor("#F0F0F0");
+    else
+      textColor = QColor("#000000");
+  } else if (hyperLink) {
+    textColor = isHoverState() ? hyperlinkHover : hyperlinkNormal;
+  } else {
+    textColor = QColor("#FFFFFF");
+  }
+
+  painter.setPen(textColor);
   painter.setOpacity(isPressed ? 0.6 : 1.0);
 
   // Draw based on mode
@@ -210,13 +259,11 @@ void Button::paintEvent(QPaintEvent *event)
       painter.drawText(QRect(iconX, 0, unicodeIconSize + 4, height()), Qt::AlignCenter, unicodeIcon);
     else 
       painter.drawPixmap(iconX, iconY, pixmap);
-    
+  
     break;
   }
 
   case IconOnly:
-  case ToolButton:
-  case TextFieldButton:
   {
     if (useUnicodeIcon) {
       painter.drawText(rect(), Qt::AlignCenter, unicodeIcon);
@@ -237,9 +284,10 @@ void Button::paintEvent(QPaintEvent *event)
 
   case TextUnderIcon:
   {
-    int spacing = std::round(height() * 0.13);
+    const int spacing = 6;
     int iconY = spacing;
-    int textY = iconY + (useUnicodeIcon ? unicodeIconSize : pixmap.height()) + spacing;
+
+    int textY = iconY + (useUnicodeIcon ? unicodeIconSize : pixmap.height());
     int textH = height() - unicodeIconSize - 3 * spacing;
 
     QRect text_area(spacing, textY, width() - 2 * spacing, textH);
@@ -296,6 +344,21 @@ void Button::enterEvent(QEnterEvent *event)
     animate->start();
   }
 
+  if (useGradient && hoverColor.isValid())
+  {
+    auto *a1 = new QPropertyAnimation(this, "startColor", this);
+    a1->setDuration(300);
+    a1->setStartValue(color1);
+    a1->setEndValue(hoverColor);
+    a1->start();
+
+    auto *a2 = new QPropertyAnimation(this, "endColor", this);
+    a2->setDuration(300);
+    a2->setStartValue(color2);
+    a2->setEndValue(hoverColor);
+    a2->start();
+  }
+
   QPushButton::enterEvent(event);
   update();
 }
@@ -309,6 +372,21 @@ void Button::leaveEvent(QEvent *event)
     animate->setStartValue(effect->blurRadius());
     animate->setEndValue(0);
     animate->start();
+  }
+
+  if (useGradient)
+  {
+    auto *a1 = new QPropertyAnimation(this, "startColor", this);
+    a1->setDuration(300);
+    a1->setStartValue(color1);
+    a1->setEndValue(baseStart);
+    a1->start();
+
+    auto *a2 = new QPropertyAnimation(this, "endColor", this);
+    a2->setDuration(300);
+    a2->setStartValue(color2);
+    a2->setEndValue(baseEnd);
+    a2->start();
   }
 
   QPushButton::leaveEvent(event);
