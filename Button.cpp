@@ -277,8 +277,13 @@ void Button::paintEvent(QPaintEvent *event)
 
   case TextOnly:
   {
-    QRect text_area(12, 0, width() - 24, height());
-    painter.drawText(text_area, Qt::AlignCenter | Qt::TextWordWrap, text());
+    if (hyperLink) {
+      QRect text_area(0, 0, width(), height());
+      painter.drawText(text_area, Qt::AlignLeft | Qt::AlignVCenter, text());
+    } else {
+      QRect text_area(12, 0, width() - 24, height());
+      painter.drawText(text_area, Qt::AlignCenter | Qt::TextWordWrap, text());
+    }
     break;
   }
 
