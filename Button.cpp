@@ -106,7 +106,7 @@ void Button::setSize(QSize s)
     case IconText:         setFixedSize(s.expandedTo(Icon_text)); break;
     case IconOnly:         setFixedSize(s.expandedTo(Icon_only)); break;
     case TextUnderIcon:    setFixedSize(s.expandedTo(Text_under_icon)); break;
-    case TextOnly:         setFixedSize(s.expandedTo(Icon_text)); break;
+    case TextOnly:         setFixedSize(s.expandedTo(Text_only)); break;
   }
   update();
 }
