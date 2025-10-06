@@ -31,6 +31,7 @@ protected:
   void leaveEvent(QEvent *event) override;
   void focusInEvent(QFocusEvent *event) override;
   void focusOutEvent(QFocusEvent *event) override;
+  void keyPressEvent(QKeyEvent *event) override;
   void contextMenuEvent(QContextMenuEvent *event) override;
   void resizeEvent(QResizeEvent *event) override;
 
@@ -50,6 +51,7 @@ private:
   bool dropDownPadding = false;
   bool isReadOnly = false;
   bool isEnabled = true;
+  bool cxtMenu = true;
 
   // Graphics
   SmoothDropShadow *effect = nullptr;
