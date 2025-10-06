@@ -21,7 +21,7 @@ void TextField::setDarkMode(bool value) {
 
 void TextField::setSize(QSize s) {
     const int fixedHeight = 36;
-    const int minWidth = 200;
+    const int minWidth = 36;
 
     int finalWidth = std::max(s.width(), minWidth);
     int finalHeight = fixedHeight;
@@ -64,6 +64,16 @@ void TextField::setEnabled(bool value)
 {
     isEnabled = value;
     QLineEdit::setEnabled(value);
+}
+
+void TextField::setFontProperties(const QString &family, int pointSize, bool bold, bool italic) {
+    isItalic = italic; isBold = bold; fontSize = pointSize; fontFamily = family;
+    updateStyle(); 
+}
+
+void TextField::setSpacingRight(bool value)
+{
+    rightSpacing = value;
 }
 
 void TextField::setClearButton(bool value) {
@@ -113,25 +123,23 @@ void TextField::setPasswordTextField(bool value) {
         password->move(x, y);
         password->hide();
 
-        password->setIconPaths(eye_icon_path, eye_icon_path);
+        password->setIconPaths(eyeclosed_icon_path, eyeclosed_icon_path);
 
         connect(password, &Button::pressed, this, [this]() {
-            QTimer::singleShot(250, this, [this]() {
-                isPasswordVisible = !isPasswordVisible;
-                if (isPasswordVisible) {
-                    password->setIconPaths(eyeclosed_icon_path, eyeclosed_icon_path);
-                    this->setEchoMode(QLineEdit::Normal);
-                } else {
-                    password->setIconPaths(eye_icon_path, eye_icon_path);
-                    this->setEchoMode(QLineEdit::Password);
-                }
-            });
+            isPasswordVisible = !isPasswordVisible;
+            if (isPasswordVisible) {
+                password->setIconPaths(eye_icon_path, eye_icon_path);
+                this->setEchoMode(QLineEdit::Normal);
+            } else {
+                password->setIconPaths(eyeclosed_icon_path, eyeclosed_icon_path);
+                this->setEchoMode(QLineEdit::Password);
+            }
         });
 
         connect(this, &QLineEdit::textChanged, this, [this](const QString &text) {
             password->setVisible(isFocused && !text.isEmpty());
             if (isPasswordVisible) {
-                password->setIconPaths(eye_icon_path, eye_icon_path);
+                password->setIconPaths(eyeclosed_icon_path, eyeclosed_icon_path);
                 this->setEchoMode(QLineEdit::Password);
                 isPasswordVisible = false;
             }
@@ -166,7 +174,7 @@ void TextField::paintEvent(QPaintEvent *event) {
 
     QPen pen;
     pen.setWidthF(isFocused ? 1.0 : 0.5);
-    pen.setColor(isFocused ? QColor("#109AC7") : (isDarkMode ? QColor("#4D4D4D") : QColor("#CCCCCC")));
+    pen.setColor(isFocused ? QColor("#008EDE") : (isDarkMode ? QColor("#4D4D4D") : QColor("#CCCCCC")));
     pen.setStyle(Qt::SolidLine);
     pen.setJoinStyle(Qt::RoundJoin);
     painter.setPen(pen);
@@ -241,7 +249,7 @@ void TextField::focusOutEvent(QFocusEvent *event) {
 }
 
 void TextField::contextMenuEvent(QContextMenuEvent *event) {
-    if (echoMode() == QLineEdit::Password) return;
+    if ((echoMode() == QLineEdit::Password) || isPasswordVisible) return;
 
     Menu *menu = new Menu(this);
     menu->setMaxVisibleItems(7);
@@ -282,8 +290,7 @@ void TextField::contextMenuEvent(QContextMenuEvent *event) {
 
 void TextField::init() {
     setSize(QSize(0, 0));
-    setFocusPolicy(Qt::TabFocus);
-    setFocusPolicy(Qt::ClickFocus);
+    setFocusPolicy(Qt::StrongFocus);
     updateStyle();
     
     effect = new SmoothDropShadow(this);
@@ -302,28 +309,39 @@ void TextField::init() {
 void TextField::updateStyle() {
     if (clear) clear->setDarkMode(isDarkMode); 
     if (password) password->setDarkMode(isDarkMode);
+
     QString txt_color = isDarkMode ? "#FFFFFF" : "#000000";
     QString selection_bg = "#32CCFE";
     QString selected_txt = "#FFFFFF";
     QString placeholder_color = isDarkMode ? "#757575" : "#ACABAB";
     int padding_left = textFieldIcon ? (12 + 20 + 12) - 3 : 12;
-    int padding_right = (clearButton || passwordButton || dropDownPadding) ? (24 + 28) - 9 : 12;
+    int padding_right = (clearButton || rightSpacing || passwordButton || dropDownPadding) ? (24 + 28) - 9 : 12;
+
+    QString fontWeight = isBold ? "bold" : "normal";
+    QString fontStyle = isItalic ? "italic" : "normal";
 
     QString styleSheet = QString(R"(
       QLineEdit {
-        font-family: Segoe UI;
-        font-size: 11pt;
+        font-family: '%1';
+        font-size: %2pt;
+        font-weight: %3;
+        font-style: %4;
         background-color: transparent;
         border-radius: 0px;
         border: none;
         outline: none;
-        color: %1;
-        selection-background-color: %2;
-        selection-color: %3;
-        placeholder-text-color: %4;
-        padding-left: %5px;
-        padding-right: %6px;
+        color: %5;
+        selection-background-color: %6;
+        selection-color: %7;
+        placeholder-text-color: %8;
+        padding-left: %9px;
+        padding-right: %10px;
+        padding-bottom: 2px;
       })")
+        .arg(fontFamily)
+        .arg(fontSize)
+        .arg(fontWeight)
+        .arg(fontStyle)
         .arg(txt_color)
         .arg(selection_bg)
         .arg(selected_txt)
