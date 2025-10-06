@@ -66,6 +66,11 @@ void TextField::setEnabled(bool value)
     QLineEdit::setEnabled(value);
 }
 
+void TextField::setContextMenu(bool value)
+{
+    cxtMenu = value;
+}
+
 void TextField::setFontProperties(const QString &family, int pointSize, bool bold, bool italic) {
     isItalic = italic; isBold = bold; fontSize = pointSize; fontFamily = family;
     updateStyle(); 
@@ -205,6 +210,22 @@ void TextField::paintEvent(QPaintEvent *event) {
     QLineEdit::paintEvent(event);
 }
 
+void TextField::keyPressEvent(QKeyEvent *event) {
+    if (!cxtMenu && event->modifiers() & Qt::ControlModifier) {
+        switch(event->key()) {
+            case Qt::Key_C:
+            case Qt::Key_V:
+            case Qt::Key_X:
+            case Qt::Key_A:
+                return;
+            default:
+                break;
+        }
+    }
+
+    QLineEdit::keyPressEvent(event);
+}
+
 void TextField::enterEvent(QEnterEvent *event) {
     isHover = true;
     QLineEdit::enterEvent(event);
@@ -249,7 +270,7 @@ void TextField::focusOutEvent(QFocusEvent *event) {
 }
 
 void TextField::contextMenuEvent(QContextMenuEvent *event) {
-    if ((echoMode() == QLineEdit::Password) || isPasswordVisible) return;
+    if (!cxtMenu) return;
 
     Menu *menu = new Menu(this);
     menu->setMaxVisibleItems(7);
