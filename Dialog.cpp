@@ -83,9 +83,10 @@ void Dialog::centerInParent()
       if (!screen)
          screen = QApplication::primaryScreen();
 
-      int x = (parentWidget()->width() - width()) / 2;
-      int y = (parentWidget()->height() - height()) / 2;
-      move(x, y);
+        QRect parentRect = parentWidget()->geometry();
+        int x = parentRect.x() + (parentRect.width() - width()) / 2;
+        int y = parentRect.y() + (parentRect.height() - height()) / 2;
+        move(x, y);
    }
 }
 
