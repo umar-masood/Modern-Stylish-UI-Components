@@ -12,12 +12,19 @@ SpinnerProgress::SpinnerProgress(QWidget *parent) : QWidget(parent) {
    animation->setEasingCurve(QEasingCurve::InOutQuad);
 }
 
-void SpinnerProgress::setSize(QSize s) {
+void SpinnerProgress::setSize(QSize s, bool isButtonMode) {
    const QSize minimumSize(250, 140);
-    
-   int width = qMax(s.width(), minimumSize.width());
-   int height = minimumSize.height();
-    
+   int width, height;
+
+   this->isButtonMode = isButtonMode;
+
+   if (!isButtonMode) {
+      width = qMax(s.width(), minimumSize.width());
+      height = minimumSize.height();
+   } else {
+      width = s.width(); height = s.height();
+   }
+
    setFixedSize(width, height);
    update();
 }
@@ -43,16 +50,16 @@ void SpinnerProgress::fadeOutAnimation() {
 }
 
 void SpinnerProgress::start() {
-   if (timer && !timer->isActive() && isIndeterminate) {
+   if (timer && !timer->isActive() && isIndeterminate) 
       timer->start(16); // ~60 FPS
-   }
+   
    fadeInAnimation();
 }
 
 void SpinnerProgress::stop() {
-   if (isIndeterminate && timer) {
+   if (isIndeterminate && timer) 
      timer->stop();
-   }
+   
    fadeOutAnimation();
 }
 
@@ -94,9 +101,7 @@ void SpinnerProgress::setValue(int value) {
    update();
 }
 
-int SpinnerProgress::getValue() const {
-   return currentValue;
-}
+int SpinnerProgress::getValue() const { return currentValue; }
 
 void SpinnerProgress::paintEvent(QPaintEvent *event) {
    QPainter painter(this);
@@ -106,20 +111,27 @@ void SpinnerProgress::paintEvent(QPaintEvent *event) {
    // Circular background arc
    QPen pen;
    pen.setColor(isDarkMode ? QColor("#383838") : QColor("#F0F0F0"));
-   pen.setWidth(6);
+   pen.setWidth(isButtonMode ? 3 : 6);
    pen.setCapStyle(Qt::RoundCap);
    pen.setJoinStyle(Qt::RoundJoin);
-   painter.setPen(pen);
 
-   int size = qMin(width() - 160, height()) - 2 * margin;
+   int size;
+   if (isButtonMode)
+      size = qMin(width(), height()) - 4;
+   else
+      size = qMin(width() - 160, height()) - 2 * margin;
+
    QRectF rec((width() - size) / 2, (height() - size) / 2, size, size);
    double percent = 0.0;
    int spanAngle = 0;
    
-   painter.drawArc(rec, 0, 360 * 16);
-
+   if (!isButtonMode) {
+      painter.setPen(pen);
+      painter.drawArc(rec, 0, 360 * 16);
+   }
+   
    // Rotating foreground arc
-   pen.setColor(QColor("#109AC7"));
+   pen.setColor(isButtonMode ? QColor("#FFFFFF") : QColor("#0191DF"));
    painter.setPen(pen);
    QPoint center(width() / 2, height() / 2);
 
@@ -153,8 +165,7 @@ void SpinnerProgress::paintEvent(QPaintEvent *event) {
    }
 }
 
-void SpinnerProgress::showEvent(QShowEvent * event)
-{
+void SpinnerProgress::showEvent(QShowEvent * event) {
    QWidget::showEvent(event);
 
    if (parentWidget()) {
