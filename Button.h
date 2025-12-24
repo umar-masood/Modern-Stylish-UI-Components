@@ -39,7 +39,7 @@ public:
   void setDisplayMode(DisplayMode mode);
   void setIconPaths(const QString &iconLight = "", const QString &iconDark = "");
   void setUnicodeIcon(const QString &unicode, int pointSize);
-  void setSize(QSize s);
+  void setFixedSize(const QSize &s);
   void setIconSize(QSize s);
   void setDarkMode(bool value);
   void setSecondary(bool value);
@@ -69,7 +69,6 @@ private:
   bool isDarkMode = false;
   bool isSecondary = false;
   bool isShadowEnabled = false;
-  bool isCustomSize = false;
   bool isUnicodeIcon = false;
   bool isGradient = false;
   bool isHyperLink = false;
@@ -105,6 +104,7 @@ private:
 
   // Display Mode
   DisplayMode displayMode = IconText;
+  QSize customSize;
 
   // Graphical Effects & Animations
   SmoothShadow *effect;
