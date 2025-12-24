@@ -3,26 +3,17 @@
 #include "SpinnerProgress.h"
 
 #include <QPushButton>
-#include <QPropertyAnimation>
-#include <QPainter>
 #include <QPainterPath>
-#include <QPaintEvent>
 #include <QMouseEvent>
 #include <QHideEvent>
 #include <QEnterEvent>
 #include <QGraphicsEffect>
 #include <QGraphicsDropShadowEffect>
 #include <QLinearGradient>
-#include <QPen>
 #include <QBrush>
 #include <QPixmap>
-#include <QFont>
-#include <QEasingCurve>
-#include <QColor>
 #include <QSize>
 #include <QRect>
-#include <QString>
-#include <QWidget>
 
 class Button : public QPushButton
 {
