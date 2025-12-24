@@ -1,5 +1,4 @@
 #include "ComboBox.h"
-#include "SmoothOpacity.h"
 
 class EventFilter : public QObject {
 public:
@@ -15,20 +14,16 @@ public:
         bool clickedInsidePopup = popup->isAncestorOf(clickedWidget);
         bool clickedOnTextField = textField->isAncestorOf(clickedWidget);
 
-        if (popup->isVisible() && !clickedInsidePopup && !clickedOnTextField) {
+        if (popup->isVisible() && !clickedInsidePopup && !clickedOnTextField) 
             box->fadeOutAnimation();
-        }
     }
 
-    if (event->type() == QEvent::ApplicationDeactivate) {
-        if (popup->isVisible()) {
+    if (event->type() == QEvent::ApplicationDeactivate) 
+        if (popup->isVisible()) 
             box->fadeOutAnimation();
-        }
-    }
-
+        
     return QObject::eventFilter(obj, event);
 }
-
 
 private:
     QWidget *popup = nullptr;
@@ -36,21 +31,20 @@ private:
     ComboBox *box = nullptr;
 };
 
-
 ComboBox::ComboBox(QWidget *parent) : TextField(parent) {
-    setSize(QSize(250, 36));
+    setFixedSize(QSize(250, 36));
     setShadow(true);
     setDropDownPadding(true);
     setDropDownButton();
     setMaxVisibleItems(8);
-    Popup();
+    setupPopup();
     setTextFieldIconSize(QSize(20, 20));
     setEditable(false);
 }
 
-void ComboBox::setSize(QSize s) {
-    TextField::setSize(s);
-    update();
+void ComboBox::setFixedSize(const QSize &s) { 
+    TextField::setFixedSize(s); 
+    update(); 
 }
 
 void ComboBox::setIconic(bool value) {
@@ -83,19 +77,14 @@ void ComboBox::positionDropDownButton() {
     }
 }
 
-void ComboBox::setPlaceholderText(const QString &text)
-{
-   TextField::setPlaceholderText(text);
-}
-
+void ComboBox::setPlaceholderText(const QString &text) { TextField::setPlaceholderText(text); }
 void ComboBox::setDropDownButton() {
     dropdown = new Button(this);
     dropdown->setShadow(false);
-    dropdown->setDisplayMode(Button::TextFieldButton);
+    dropdown->setDisplayMode(Button::IconOnly);
     dropdown->setIconSize(QSize(20, 20));
-    dropdown->setSize(QSize(28, 28));
-    dropdown->setIconPaths("C:/Users/umara/Pictures/U-Converter/chevron-down.svg",
-                           "C:/Users/umara/Pictures/U-Converter/chevron-down.svg");
+    dropdown->setFixedSize(QSize(28, 28));
+    dropdown->setIconPaths(arrowDown, arrowDown);
     positionDropDownButton();
     dropdown->raise();
 }
@@ -108,8 +97,8 @@ void ComboBox::addItems(QStringList items) {
 
 void ComboBox::addIcons(QStringList Light, QStringList dark) {
     if (isIconic) {
-        _itemsIconsLight = Light;
-        _itemsIconsDark = dark;
+        itemsIconsLight = Light;
+        itemsIconsDark = dark;
     }
     updateModel();
     updatePopupListHeight();
@@ -129,12 +118,11 @@ void ComboBox::fadeOutAnimation() {
     disconnect(animation, &QPropertyAnimation::finished, nullptr, nullptr);
     animation->setStartValue(1.0);
     animation->setEndValue(0.0);
-    connect(animation, &QPropertyAnimation::finished, this, [this]() { 
-        popup->hide(); });
+    connect(animation, &QPropertyAnimation::finished, this, [this]() { popup->hide(); });
     animation->start();
 }
 
-void ComboBox::Popup() {
+void ComboBox::setupPopup() {
     popup = new RoundedBox();
     list = new QListView();
     d = new Delegate(this->size());
@@ -167,7 +155,7 @@ void ComboBox::Popup() {
     popup->setLayout(layout);
     popup->hide();
     
-    SmoothOpacity *smooth_opacity = new SmoothOpacity;
+    smooth_opacity = new SmoothOpacity;
     popup->setGraphicsEffect(smooth_opacity);
 
     animation = new QPropertyAnimation(smooth_opacity, "opacity");
@@ -176,15 +164,13 @@ void ComboBox::Popup() {
 
     qApp->installEventFilter(new EventFilter(this, popup, this, this));
 
-    if (dropdown) {
+    if (dropdown) 
         connect(dropdown, &Button::clicked, this, [this]() {
-            if (popup->isVisible()) {
+            if (popup->isVisible()) 
                fadeOutAnimation();
-            } else {
-               popupPos();
-            }
+            else 
+               popupPositioning();
         });
-    }
 
     connect(list, &QListView::clicked, this, [this]() {
         this->setText(currentText());
@@ -192,12 +178,12 @@ void ComboBox::Popup() {
     });
 }
 
-void ComboBox::popupPos() {
+void ComboBox::popupPositioning() {
     QPoint globalPos = this->mapToGlobal(QPoint(0, 0));
     QScreen *screenAtCursor = QApplication::screenAt(globalPos);
-    if (!screenAtCursor) {
+    if (!screenAtCursor) 
         screenAtCursor = QApplication::primaryScreen();
-    }
+    
     QRect screenGeometry = screenAtCursor->availableGeometry();
     QRect comboBoxRect = QRect(globalPos, this->size());
     QSize popupSize = popup->size();
@@ -207,15 +193,14 @@ void ComboBox::popupPos() {
     QPoint centerPos(comboBoxRect.left(), comboBoxRect.center().y() - popupSize.height() / 2);
 
     QPoint finalPopupPos;
-    if (screenGeometry.contains(QRect(centerPos, popupSize))) {
+    if (screenGeometry.contains(QRect(centerPos, popupSize))) 
         finalPopupPos = centerPos;
-    } else if (screenGeometry.contains(QRect(belowPos, popupSize))) {
+    else if (screenGeometry.contains(QRect(belowPos, popupSize))) 
         finalPopupPos = belowPos;
-    } else if (screenGeometry.contains(QRect(abovePos, popupSize))) {
+    else if (screenGeometry.contains(QRect(abovePos, popupSize))) 
         finalPopupPos = abovePos;
-    } else {
+    else
         finalPopupPos = belowPos;
-    }
 
     int finalX = std::clamp(finalPopupPos.x(), screenGeometry.left(), screenGeometry.right() - popupSize.width());
     int finalY = std::clamp(finalPopupPos.y(), screenGeometry.top(), screenGeometry.bottom() - popupSize.height());
@@ -227,10 +212,7 @@ void ComboBox::popupPos() {
 }
 
 
-void ComboBox::setMaxVisibleItems(int items) {
-    maxVisibleItems = items;
-}
-
+void ComboBox::setMaxVisibleItems(int items) { maxVisibleItems = items; }
 int ComboBox::getMaxVisibleItems() { return maxVisibleItems; }
 
 void ComboBox::updatePopupListHeight() {
@@ -239,7 +221,7 @@ void ComboBox::updatePopupListHeight() {
     int itemsHeight = list->sizeHintForRow(0); 
     int totalItems = list->model()->rowCount();
     int visibleItems = std::min(totalItems, maxVisibleItems);
-    if (totalItems <= 0) { return; }
+    if (totalItems <= 0)  return; 
     
     int height = (visibleItems * itemsHeight) + spacing * (visibleItems - 1);
     int finalHeight = 0;
@@ -260,9 +242,9 @@ void ComboBox::deleteItem(int index) {
     if (index >= 0 && index < model.rowCount()) {
         model.removeRow(index);
         _items.removeAt(index);
-        if (index < _itemsIconsLight.size())
-            _itemsIconsLight.removeAt(index);
-            _itemsIconsDark.removeAt(index);
+        if (index < itemsIconsLight.size())
+            itemsIconsLight.removeAt(index);
+            itemsIconsDark.removeAt(index);
         updatePopupListHeight();
     }
 }
@@ -270,23 +252,22 @@ void ComboBox::deleteItem(int index) {
 QString ComboBox::currentText() {
     QModelIndex index = list->currentIndex();
     if (index.isValid()) {
-        if (isIconic) setIconPaths(_itemsIconsLight[index.row()], _itemsIconsDark[index.row()]);
+        if (isIconic) 
+            setIconPaths(itemsIconsLight[index.row()], itemsIconsDark[index.row()]);
         return index.data(Qt::DisplayRole).toString();
     }
     return "";
 }
 
-int ComboBox::currentIndex() {
-    return list->currentIndex().row();
-}
-
+int ComboBox::currentIndex() { return list->currentIndex().row(); }
 void ComboBox::setCurrentItem(int index) {
     QModelIndex i = list->model()->index(index, 0);
     list->setCurrentIndex(i);
     setText(i.data(Qt::DisplayRole).toString());
 
     if (isIconic)
-    setIconPaths((isDarkMode ? (_itemsIconsDark[index]) : (_itemsIconsLight[index])) , (isDarkMode ? (_itemsIconsDark[index]) : (_itemsIconsLight[index])));
+    setIconPaths((isDarkMode ? (itemsIconsDark[index]) : (itemsIconsLight[index])) , 
+                (isDarkMode ? (itemsIconsDark[index]) : (itemsIconsLight[index])));
 
     update();
 }
@@ -295,11 +276,11 @@ void ComboBox::updateModel() {
     model.clear();
     for (int i = 0; i < _items.size(); ++i) {
         QStandardItem *item;
-        if (isIconic && i < _itemsIconsLight.size() && !_itemsIconsLight[i].isEmpty()) {
-            item = new QStandardItem(QIcon(isDarkMode ? (_itemsIconsDark[i]) : (_itemsIconsLight[i])), _items[i]);
-        } else {
+        if (isIconic && i < itemsIconsLight.size() && !itemsIconsLight[i].isEmpty()) 
+            item = new QStandardItem(QIcon(isDarkMode ? (itemsIconsDark[i]) : (itemsIconsLight[i])), _items[i]);
+        else 
             item = new QStandardItem(_items[i]);
-        }
+        
         model.appendRow(item);
     }
 
@@ -314,32 +295,28 @@ void ComboBox::updateModel() {
 
 void ComboBox::clearAll() {
     _items.clear();
-    _itemsIconsLight.clear();
-    _itemsIconsDark.clear();
+    itemsIconsLight.clear();
+    itemsIconsDark.clear();
     model.clear();
     if (list) list->reset();
 }
 
 void ComboBox::mousePressEvent(QMouseEvent *event) {
     if (!isEditable) {
-        if (popup->isVisible()) {
+        if (popup->isVisible()) 
             fadeOutAnimation();
-        } else {
-            QTimer::singleShot(300, this, [this]() {
-                popupPos();
-            });
-        }
+        else 
+            QTimer::singleShot(300, this, [this]() { popupPositioning(); });
     } else {
         QLineEdit::mousePressEvent(event);
     }
 }
 
 void ComboBox::mouseMoveEvent(QMouseEvent *event) {
-    if (!isEditable) {
+    if (!isEditable) 
         event->accept();
-    } else {
+    else 
         QLineEdit::mouseMoveEvent(event);
-    }
 }
 
 void ComboBox::keyPressEvent(QKeyEvent *event) {
@@ -349,11 +326,10 @@ void ComboBox::keyPressEvent(QKeyEvent *event) {
         if (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) {
             QString text = this->text();
             int index = _items.indexOf(text);
-            if (index != -1) {
+            if (index != -1) 
                 setCurrentItem(index);
-            } else {
+            else 
                 return;
-            }
         } else {
             QLineEdit::keyPressEvent(event);
         }
@@ -361,19 +337,17 @@ void ComboBox::keyPressEvent(QKeyEvent *event) {
 }
 
 void ComboBox::contextMenuEvent(QContextMenuEvent *event) {
-    if (!isEditable) {
+    if (!isEditable) 
         event->accept();
-    } else {
+    else 
         TextField::contextMenuEvent(event);
-    }
 }
 
 void ComboBox::mouseDoubleClickEvent(QMouseEvent *event) {
-    if (!isEditable) {
+    if (!isEditable) 
         event->accept();
-    } else {
+    else 
         QLineEdit::mouseDoubleClickEvent(event);
-    }
 }
 
 void ComboBox::resizeEvent(QResizeEvent *event) {
