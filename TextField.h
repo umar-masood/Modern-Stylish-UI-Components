@@ -1,31 +1,40 @@
-#ifndef TEXTFIELD_H
-#define TEXTFIELD_H
+#pragma once
 
-#include <QtWidgets>
 #include "Button.h"
-#include "SmoothShadow.h"
 #include "Menu.h"
+#include "SmoothShadow.h"
+
+#include <QResizeEvent>
+#include <QFocusEvent>
+#include <QContextMenuEvent>
+#include <QTimer>
+#include <QDebug>
+#include <algorithm>
+#include <QLineEdit>
 
 class TextField : public QLineEdit {
   Q_OBJECT
 
-public:
+  public:
   explicit TextField(const QString &text, QWidget *parent = nullptr);
   explicit TextField(QWidget *parent = nullptr);
 
   void setShadow(bool value);
-  void setDarkMode(bool value);
-  void setSize(QSize s);
+  virtual void setDarkMode(bool value);
+  void setFixedSize(QSize s);
   void setTextFieldIcon(bool value);
   void setTextFieldIconSize(QSize s);
-  void setIconPaths(const QString &light_icon_path = "", const QString &dark_icon_path = "");
+  void setIconPaths(const QString &lightIcon = "", const QString &darkIcon = "");
   void setClearButton(bool value);
   void setPasswordTextField(bool value);
   void setDropDownPadding(bool value);
   void setReadOnly(bool value);
   void setEnabled(bool value);
+  void setFontProperties(const QString &family, int pointSize = 12, bool bold = false, bool italic = false);
+  void setSpacingRight(bool value);
+  void setContextMenu(bool value);
 
-protected:
+  protected:
   void paintEvent(QPaintEvent *event) override;
   void enterEvent(QEnterEvent *event) override;
   void leaveEvent(QEvent *event) override;
@@ -35,15 +44,17 @@ protected:
   void contextMenuEvent(QContextMenuEvent *event) override;
   void resizeEvent(QResizeEvent *event) override;
 
-private:
+
+  private:
   void init();
   void updateStyle();
+  void buttonPositioning(Button *button);
 
   // States
   bool isHover = false;
   bool isFocused = false;
   bool isDarkMode = false;
-  bool hasShadow = true;
+  bool hasShadow = false;
   bool textFieldIcon = false;
   bool clearButton = false;
   bool passwordButton = false;
@@ -51,22 +62,35 @@ private:
   bool dropDownPadding = false;
   bool isReadOnly = false;
   bool isEnabled = true;
+  bool isBold = false;
+  bool isItalic = false;
+  bool rightSpacing = false;
   bool cxtMenu = true;
 
   // Graphics
-  SmoothDropShadow *effect = nullptr;
+  SmoothShadow *effect = nullptr;
   QPropertyAnimation *animate = nullptr;
 
   // Icons
   QString light_icon;
   QString dark_icon;
-  const QString eye_icon_path = ":/eye.svg";
-  const QString eyeclosed_icon_path = ":/eye-closed.svg";
+  const QString eyeIcon = ":/icons/ComponentsIcons/eye.svg";
+  const QString eyeClosedIcon = ":/icons/ComponentsIcons/eye-closed.svg";
+  const QString clearIcon = ":/icons/ComponentsIcons/x.svg";
   QSize textFieldIconSize = QSize(20, 20);
 
   // Buttons
   Button *clear = nullptr;
   Button *password = nullptr;
-};
 
-#endif
+  // Font 
+  QString fontFamily = "Segoe UI";
+  int fontSize = 10;
+
+  // Size
+  const int fixedHeight = 36;
+  const int minWidth = 36;
+
+  // Menu
+  Menu *menu = nullptr;
+};
