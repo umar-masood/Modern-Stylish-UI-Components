@@ -24,7 +24,7 @@ void Button::init() {
   // Loader Spinner
   spinner = new SpinnerProgress(this);
   spinner->setIndeterminate(true);
-  spinner->setSize(QSize(20, 20), true);
+  spinner->setFixedSize(QSize(20, 20), true);
 }
 
 void Button::setShadow(bool value) {
@@ -60,10 +60,7 @@ void Button::setGradientColor(bool value, const QString &hex1, const QString &he
 
 void Button::setDisplayMode(DisplayMode mode) {
   displayMode = mode;
-
   if (displayMode == IconOnly) setSecondary(true);
-  if (!isCustomSize) setSize(QSize(0, 0));
-
   update();
 }
 
@@ -85,21 +82,9 @@ void Button::setIconSize(QSize s) {
   isUnicodeIcon = false;
 }
 
-void Button::setSize(QSize s) {
-  isCustomSize = true;
-
-  const QSize Icon_text(100, 36);
-  const QSize Icon_only(20, 20);
-  const QSize Text_under_icon(80, 50);
-  const QSize Text_only(20, 12);
-
-  switch (displayMode) {
-    case IconText:         setFixedSize(s.expandedTo(QSize(100, 36))); break;
-    case IconOnly:         setFixedSize(s.expandedTo(QSize(20, 20))); break;
-    case TextUnderIcon:    setFixedSize(s.expandedTo(QSize(80, 50))); break;
-    case TextOnly:         setFixedSize(s.expandedTo(QSize(20, 12))); break;
-  }
-  update();
+void Button::setFixedSize(const QSize &s) { 
+  if (s.isValid()) customSize = s; 
+  QPushButton::setFixedSize(s);
 }
 
 void Button::setDarkMode(bool value) { 
@@ -139,14 +124,15 @@ QColor Button::getStartColor() const { return QColor(color1); }
 QColor Button::getEndColor() const { return QColor(color2); }
 
 QColor Button::getBackgroundColor() const {
-  const QColor disabledSecondary   = isDarkMode ? "#555555" : "#E0E0E0";
-  const QColor disabledPrimary     = "#B0E0FF";
-  const QColor normalSecondary     = isDarkMode ? "#2D2D2D" : "#FBFBFB";
-  const QColor normalPrimary       = "#008EDE";
-  const QColor hoverSecondary      = isDarkMode ? "#323232" : "#F6F6F6";
-  const QColor hoverPrimary        = "#1BB3E6";
-  const QColor pressedSecondary    = isDarkMode ? "#1F1F1F" : "#FFFFFF";
-  const QColor pressedPrimary      = "#109AC7";
+  // Colors
+  QColor disabledSecondary   = isDarkMode ? "#555555" : "#E0E0E0";
+  QColor disabledPrimary     = "#B0E0FF";
+  QColor normalSecondary     = isDarkMode ? "#2D2D2D" : "#FBFBFB";
+  QColor normalPrimary       = "#008EDE";
+  QColor hoverSecondary      = isDarkMode ? "#323232" : "#F6F6F6";
+  QColor hoverPrimary        = "#1BB3E6";
+  QColor pressedSecondary    = isDarkMode ? "#1F1F1F" : "#FFFFFF";
+  QColor pressedPrimary      = "#109AC7";
 
   if (isDisabledState()) 
     return isIconOnly() ? Qt::transparent : (isSecondary ? disabledSecondary : disabledPrimary);
@@ -207,15 +193,28 @@ void Button::drawBackground(QPainter &painter, const QColor &bgColor) {
 }
 
 void Button::drawContent(QPainter &painter, const QPixmap &pixmap) {
+  QFontMetrics fm(painter.font());
+  QSize tSize = fm.size(Qt::TextSingleLine, this->text());
+  int textW = tSize.width();
+  int textH = tSize.height();
+  
   switch (displayMode) {
   case IconText: {
-    const int iconX = 12;
-    const int spacing = iconX;
-    const int iconH = isUnicodeIcon ? unicodeIconSize : pixmap.height();
-    const int iconY = (height() - iconH) / 2;
-    const int textX = iconX + (isUnicodeIcon ? unicodeIconSize : pixmap.width()) + spacing;
+    const int spacing = 8;    
+    const int iconX = 10;
 
-    QRect textRect(textX, 0, width() - textX - iconX, height());
+    int iconH = isUnicodeIcon ? unicodeIconSize : pixmap.height();
+    int iconW = isUnicodeIcon ? unicodeIconSize : pixmap.width();
+    int iconY = (height() - iconH) / 2;
+
+    int textX = iconX + iconW + spacing;
+    int textY = 0;
+
+    int buttonWidth = iconX + iconW + spacing + textW + 2 * spacing;
+    if (!customSize.isValid()) 
+      QPushButton::setFixedSize(buttonWidth, 36);
+
+    QRect textRect(textX, textY, textW , height());
     painter.drawText(textRect, Qt::AlignVCenter, text());
 
     if (isUnicodeIcon)
@@ -237,30 +236,51 @@ void Button::drawContent(QPainter &painter, const QPixmap &pixmap) {
   }
 
   case TextOnly: {
-    QRect textRect = isHyperLink ? QRect(0, 0, width(), height()) : QRect(12, 0, width() - 24, height());
+    int padding = 12;
+    int buttonWidth = padding + textW + padding;
+
+    if (customSize.isValid()) {
+      textW = width() - 2 * padding;
+      setFixedSize(customSize);
+    } else {
+      QPushButton::setFixedSize(buttonWidth, 36);
+    }
+
+    QRect textRect = isHyperLink ? QRect(0, 0, width(), height()) : QRect(padding, 0, textW, height());
     painter.drawText(textRect, isHyperLink ? (Qt::AlignLeft | Qt::AlignVCenter) : (Qt::AlignCenter | Qt::TextWordWrap), text());
     break;
   }
 
   case TextUnderIcon: {
-    const int spacing = 6;
-    int iconY = spacing;
-    int textY = iconY + (isUnicodeIcon ? unicodeIconSize : pixmap.height());
-    int textH = height() - unicodeIconSize - 3 * spacing;
-    QRect textRect(spacing, textY, width() - 2 * spacing, textH);
+    const int hspacing = 12;
+    const int vSpacing = 6;
+    const int gap = 4;
+    
+    int textY = vSpacing + (isUnicodeIcon ? unicodeIconSize : pixmap.height()) + gap;
 
-    if (isUnicodeIcon)
-      painter.drawText(QRect(0, iconY, width(), unicodeIconSize + 4), Qt::AlignCenter, unicodeIcon);
-    else {
-      int x = (width() - pixmap.width()) / 2;
-      painter.drawPixmap(x, iconY, pixmap);
+    int buttonWidth = hspacing + textW + hspacing;
+    int buttonHeight = vSpacing + pixmap.height() + gap + textH + vSpacing;
+
+    if (customSize.isValid()) {
+      setFixedSize(customSize);
+    } else {
+      QPushButton::setFixedSize(buttonWidth, buttonHeight);
     }
 
-    painter.drawText(textRect, Qt::AlignCenter, text());
+    if (isUnicodeIcon)
+      painter.drawText(QRect(0, vSpacing, width(), unicodeIconSize + 4), Qt::AlignCenter, unicodeIcon);
+    else {
+      int x = (width() - pixmap.width()) / 2;
+      painter.drawPixmap(x, vSpacing, pixmap);
+    }
+
+    QRect textRect(0, textY, width(), textH);  
+    painter.drawText(textRect, Qt::AlignHCenter, text());
+
     break;
   }
-  default:
-    break;
+
+  default: break;
   }
 }
 
@@ -294,11 +314,12 @@ void Button::paintEvent(QPaintEvent *event) {
     font.setPixelSize(unicodeIconSize);
   } else {
     font.setFamily(fontFamily);
-    font.setPointSize(displayMode == TextUnderIcon ? 10 : fontSize);
+    font.setPointSize(fontSize);
     font.setWeight(isBold ? QFont::DemiBold : QFont::Normal);
     font.setItalic(isItalic);
-   }
-   painter.setFont(font);
+  }
+  
+  painter.setFont(font);
 
   // Text color & opacity
   painter.setPen(getTextColor());
@@ -329,7 +350,7 @@ void Button::hideEvent(QHideEvent *event) {
 void Button::enterEvent(QEnterEvent *event) {
   isHover = true;
 
-  if (isShadowEnabled) {
+  if (isShadowEnabled && !isIconOnly()) {
     if (!isSecondary) 
       shadow_color = QColor::fromString("#008EDE");
     else 
