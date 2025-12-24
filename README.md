@@ -1,4 +1,4 @@
-🌟 Modern UI Component Set for Mac Air Pro & Windows (Supported Cross-Platform)
+🌟 QtNovaUI - Component Set for Windows & MacOS (Supported Cross-Platform)
 =====================================================
 Crafted with Qt, C++ , QSS — Art Meets Function
 _______________________________________________
