@@ -1,13 +1,14 @@
 #pragma once
 
-#include "RoundedBox.h"
 #include "Button.h"
+#include "../windows/subWindow/SubWindow.h"
+
+#include <QScreen>
+#include <QCursor>
+#include <QResizeEvent>
+#include <QCloseEvent>
 #include <QVBoxLayout>
-#include <QLabel>
-#include <QPixmap>
-#include <QSize>
-#include <QApplication>
-#include <QShowEvent>
+#include <QEvent>
 
 class Overlay : public QWidget {
    Q_OBJECT
@@ -18,22 +19,13 @@ class Overlay : public QWidget {
    void paintEvent(QPaintEvent *event) override;
 };
 
-class Dialog : public RoundedBox
+class Dialog : public SubWindow 
 {
    Q_OBJECT
 
 public:
-   Dialog(QWidget *parent = nullptr);
-
-   void setText(const QString &text);
-   void setButtonText(const QString &text);
-   void setIcon(const QString &iconLight, const QString &iconDark);
-   void setIconSize(QSize s);
-   void setSize(QSize s);
-   void setDarkMode(bool value);
-
-signals:
-   void onDialogButtonClicked();
+   Dialog(QWidget *centralWidget = nullptr, QWidget *parent = nullptr, bool closeBtn = true);
+   Q_INVOKABLE void setDarkMode(bool value);
 
 protected:
    void showEvent(QShowEvent *event) override;
@@ -42,21 +34,13 @@ protected:
    bool eventFilter(QObject* obj, QEvent* event) override;
    
 private:
-   void setup();
    void centerInParent();
-   void applyStyleSheet();
+   void setup();
 
    QWidget *contentWidget = nullptr;
-   QWidget *titleBarWidget = nullptr;
    Overlay *overlay = nullptr;
 
-   QPixmap pixmap(const QString &iconLight, const QString &iconDark, QSize s);
    bool isDarkMode = false;
    bool setupDone = false;
-   QString iconLightPath, iconDarkPath, dialogText, btnText;
-   QLabel *dialogIcon = nullptr;
-   QVBoxLayout *layout = nullptr;
-   QSize iconSize = QSize(200, 200);
-   QLabel *label = nullptr;
 };
 
