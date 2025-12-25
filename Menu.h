@@ -1,20 +1,27 @@
-#ifndef MENU_H
-#define MENU_H
+#pragma once
+#include <QStandardItem>
+#include <QListView>
+#include <QMouseEvent>
+#include <QEvent>
+#include <QPropertyAnimation>
+#include <QTimer>
+#include <QMap>
+#include <QModelIndex>
 
-#include <QtWidgets>
 #include "ScrollBar.h"
 #include "RoundedBox.h"
 #include "Delegate.h"
 #include "SmoothOpacity.h"
 
 class MenuItem : public QStandardItem {
-public:
+   public:
    explicit MenuItem(const QIcon &icon, const QString &text, const QString &shortcut, bool hasSubMenu);
 };
 
 class Menu : public QListView {
    Q_OBJECT
-public:
+
+   public:
    struct Actions {
      const QString text;
      bool hasSubMenu = false;
@@ -73,13 +80,13 @@ public:
    void setMaxVisibleItems(int items);
    int getMaxVisibleItems();
 
-signals:
+   signals:
    void itemClicked();
 
-private slots:
+   private slots:
    void onItemClicked(const QModelIndex &index);
 
-protected:
+   protected:
    void mouseMoveEvent(QMouseEvent *event) override;
    void leaveEvent(QEvent *event) override;
    bool eventFilter(QObject *o, QEvent *event) override;
@@ -117,4 +124,3 @@ protected:
 
    QTimer *subMenuTimer = nullptr;
 };
-#endif
