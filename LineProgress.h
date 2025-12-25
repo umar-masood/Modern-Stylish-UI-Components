@@ -1,30 +1,35 @@
-#ifndef LINEPROGRESS_H
-#define LINEPROGRESS_H
+#pragma once
+#include <QWidget>
+#include <QPropertyAnimation>
+#include <QTimer>
+#include <QString>
+#include <QPaintEvent>
 
-#include <QtWidgets>
 #include "SmoothOpacity.h"
 
 class LineProgress : public QWidget {
    Q_OBJECT
 
-public:
+   public:
    explicit LineProgress(QWidget *parent = nullptr);
     
    void setSize(QSize s);
-   void fadeInAnimation();
-   void fadeOutAnimation();
    void setDarkMode(bool value);
    void start();
    void stop();
    void setText(const QString &text);
-   void setValue(int value);
    void setIndeterminate(bool value);
+
+   void setValue(int value);
    int getValue() const;
 
-protected:
+   protected:
    void paintEvent(QPaintEvent *event) override;
 
-private:
+   private:
+   void fadeInAnimation();
+   void fadeOutAnimation();
+
    bool isDarkMode = false;
    bool isIndeterminate = false;
 
@@ -44,6 +49,4 @@ private:
 
    QString loaderText;
 
-};
-
-#endif 
+}; 
