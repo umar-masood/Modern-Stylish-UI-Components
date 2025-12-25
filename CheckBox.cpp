@@ -8,7 +8,7 @@ CheckBox::CheckBox(const QString &text, QWidget *parent)
 {
    setAttribute(Qt::WA_TranslucentBackground);
    setAttribute(Qt::WA_Hover);
-   pixmap = QPixmap(":/icons/check.png").scaled(16, 16, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+   pixmap = QPixmap(":/icons/checkbox.png").scaled(16, 16, Qt::KeepAspectRatio, Qt::SmoothTransformation);
    setFixedSize(20 + 12 + QFontMetrics(font()).horizontalAdvance(text), 22);
 }
 
@@ -94,3 +94,4 @@ void CheckBox::mousePressEvent(QMouseEvent *event)
    setChecked(!_isChecked);
    QWidget::mousePressEvent(event);
 }
+
