@@ -77,7 +77,7 @@ class ComboBox : public TextField {
   
     // Dropdown Button
     Button *dropdown = nullptr;
-    const QString arrowDown = ":/icons/ComponentsIcons/arrow-down.svg";
+    const QString arrowDown = ":/icons/arrow-down.svg";
 
     // Rounded Popup
     RoundedBox *popup = nullptr;
