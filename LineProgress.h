@@ -4,6 +4,10 @@
 #include <QTimer>
 #include <QString>
 #include <QPaintEvent>
+#include <QFont>
+#include <QRect>
+#include <QPen>
+#include <QBrush>
 
 #include "SmoothOpacity.h"
 
