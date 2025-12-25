@@ -74,9 +74,9 @@ class TextField : public QLineEdit {
   // Icons
   QString light_icon;
   QString dark_icon;
-  const QString eyeIcon = ":/icons/ComponentsIcons/eye.svg";
-  const QString eyeClosedIcon = ":/icons/ComponentsIcons/eye-closed.svg";
-  const QString clearIcon = ":/icons/ComponentsIcons/x.svg";
+  const QString eyeIcon = ":/icons/eye.svg";
+  const QString eyeClosedIcon = ":/icons/eye-closed.svg";
+  const QString clearIcon = ":/icons/x.svg";
   QSize textFieldIconSize = QSize(20, 20);
 
   // Buttons
