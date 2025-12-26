@@ -1,27 +1,37 @@
 #pragma once
-#include <QStandardItem>
-#include <QListView>
-#include <QMouseEvent>
-#include <QEvent>
-#include <QPropertyAnimation>
-#include <QTimer>
-#include <QMap>
-#include <QModelIndex>
 
 #include "ScrollBar.h"
 #include "RoundedBox.h"
 #include "Delegate.h"
 #include "SmoothOpacity.h"
 
+#include <QStandardItem>
+#include <QListView>
+#include <QStandardItemModel>
+#include <QMouseEvent>
+#include <QApplication>
+#include <QGuiApplication>
+#include <QScreen>
+#include <QVBoxLayout>
+#include <QAbstractItemView>
+#include <QAbstractScrollArea>
+#include <QPropertyAnimation>
+#include <QEasingCurve>
+#include <QFrame>
+#include <QTimer>
+#include <QCursor>
+#include <QMap>
+#include <QEvent>
+#include <algorithm>
+
 class MenuItem : public QStandardItem {
-   public:
+public:
    explicit MenuItem(const QIcon &icon, const QString &text, const QString &shortcut, bool hasSubMenu);
 };
 
 class Menu : public QListView {
    Q_OBJECT
-
-   public:
+public:
    struct Actions {
      const QString text;
      bool hasSubMenu = false;
@@ -80,13 +90,13 @@ class Menu : public QListView {
    void setMaxVisibleItems(int items);
    int getMaxVisibleItems();
 
-   signals:
+signals:
    void itemClicked();
 
-   private slots:
+private slots:
    void onItemClicked(const QModelIndex &index);
 
-   protected:
+protected:
    void mouseMoveEvent(QMouseEvent *event) override;
    void leaveEvent(QEvent *event) override;
    bool eventFilter(QObject *o, QEvent *event) override;
@@ -124,3 +134,4 @@ class Menu : public QListView {
 
    QTimer *subMenuTimer = nullptr;
 };
+
