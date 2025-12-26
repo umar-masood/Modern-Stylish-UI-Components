@@ -1,8 +1,7 @@
 #include "Toggle.h"
 
-Toggle::Toggle(QWidget *parent)
-  : QPushButton(parent), scale(1.0), offset(0.0), KW(14) {
-    init();
+Toggle::Toggle(QWidget *parent) : QPushButton(parent), scale(1.0), offset(0.0), KW(14) {
+  init();
 }
 
 void Toggle::setShadow(bool value) {
@@ -10,10 +9,7 @@ void Toggle::setShadow(bool value) {
   if (hasShadow)  setGraphicsEffect(effect);  else  setGraphicsEffect(nullptr);
 }
 
-void Toggle::setDarkMode(bool value) {
-  isDarkMode = value;
-}
-
+void Toggle::setDarkMode(bool value) { isDarkMode = value; }
 void Toggle::init() {
   setFixedSize(38, 22);
   setFocusPolicy(Qt::NoFocus);
@@ -61,7 +57,7 @@ void Toggle::init() {
   animation3->setEasingCurve(QEasingCurve::OutQuad);
 
   // Shadow Effect
-  effect = new SmoothDropShadow(this);
+  effect = new SmoothShadow(this);
   effect->setOffset(0, 0);
   effect->setColor(QColor::fromString("#32CCFE"));
   effect->setBlurRadius(0);
@@ -74,19 +70,13 @@ void Toggle::init() {
   animation4->setEasingCurve(QEasingCurve::InOutQuad);
 }
 
-qreal Toggle::getScale() {
-  return scale;
-}
-
+qreal Toggle::getScale() { return scale; }
 void Toggle::setScale(qreal value) {
   scale = value;
   update();
 }
 
-qreal Toggle::getOffset() {
-  return offset;
-}
-
+qreal Toggle::getOffset() { return offset; }
 void Toggle::setOffset(qreal value) {
   offset = value;
   update();
@@ -97,9 +87,7 @@ void Toggle::setKW(int value) {
   update();
 }
 
-int Toggle::getKW() {
-  return KW;
-}
+int Toggle::getKW() { return KW; }
 
 void Toggle::paintEvent(QPaintEvent *event) {
   QPainter painter(this);
@@ -137,7 +125,6 @@ void Toggle::paintEvent(QPaintEvent *event) {
   QColor BORDER;
   if (isToggled)  BORDER = toggedBorderColor;  else  BORDER = isDarkMode ? darkBorder : lightBorder;
   
-
   QColor KBG;
   if (isToggled) 
     KBG = isDarkMode ? darkToggledKnob : lightToggledKnob;
@@ -197,24 +184,25 @@ void Toggle::leaveEvent(QEvent *event) {
 }
 
 void Toggle::mousePressEvent(QMouseEvent *event) {
-  if(event->button() == Qt::LeftButton) {
+  if (event->button() == Qt::LeftButton) {
     isDragging = false;
     dragStartX = event->pos().x();
     dragOffset = offset;
     event->accept();
     return;
   } 
+
   QPushButton::mousePressEvent(event);
 }
 
 void Toggle::mouseMoveEvent(QMouseEvent *event) {
-  if(event->buttons() & Qt::LeftButton) {
+  if (event->buttons() & Qt::LeftButton) {
     int currentX = event->pos().x();
     int dx =  currentX - dragStartX;
 
-    if (!isDragging && std::abs(dx) >= 4) isDragging = true;
+    if (!isDragging && std::abs(dx) >= 4)
+      isDragging = true;
     
-
     if (isDragging) {
       int range = width() - 8 - KW;
       qreal newOffset = dragOffset + (qreal)dx / range;
@@ -225,16 +213,17 @@ void Toggle::mouseMoveEvent(QMouseEvent *event) {
       return;
     }
   }
+
   QPushButton::mouseMoveEvent(event);
 }
 
 void Toggle::mouseReleaseEvent(QMouseEvent *event) {
-  if(event->button() == Qt::LeftButton) {
+  if (event->button() == Qt::LeftButton) {
     if (isDragging) {
       isDragging = false;
       bool toggleState = (offset >= 0.5);
 
-      if(toggleState != isToggled) {
+      if (toggleState != isToggled) {
         setChecked(toggleState);
       } else {
         animation2->stop();
@@ -250,5 +239,6 @@ void Toggle::mouseReleaseEvent(QMouseEvent *event) {
       return;
     }
   }
+
   QPushButton::mouseReleaseEvent(event);
 }
