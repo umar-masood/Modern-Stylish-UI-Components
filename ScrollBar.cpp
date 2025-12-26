@@ -1,12 +1,10 @@
 #include "ScrollBar.h"
 
-ScrollBar::ScrollBar(Qt::Orientation orientation, QWidget *parent)
-  : QScrollBar(orientation, parent) {
+ScrollBar::ScrollBar(Qt::Orientation orientation, QWidget *parent) : QScrollBar(orientation, parent) {
   init();
 }
 
-ScrollBar::ScrollBar(QWidget *parent)
-  : QScrollBar(parent) {
+ScrollBar::ScrollBar(QWidget *parent) : QScrollBar(parent) {
   init();
 }
 
@@ -35,21 +33,13 @@ void ScrollBar::setOpacity(qreal o) {
   update();
 }
 
-qreal ScrollBar::getOpacity() const {
-  return opacity;
-}
-
-void ScrollBar::setHandle(qreal w)
-{ 
+qreal ScrollBar::getOpacity() const { return opacity; }
+void ScrollBar::setHandle(qreal w) { 
   handle = w;
   update();
 }
 
-qreal ScrollBar::getHandle()
-{
-  return handle;
-}
-
+qreal ScrollBar::getHandle() { return handle; }
 void ScrollBar::paintEvent(QPaintEvent *event) {
   QPainter painter(this);
   painter.setRenderHint(QPainter::Antialiasing);
