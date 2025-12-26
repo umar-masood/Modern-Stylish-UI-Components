@@ -1,4 +1,4 @@
-#include "menu.h"
+#include "Menu.h"
 
 MenuItem::MenuItem(const QIcon &icon, const QString &text, const QString &shortcut, bool hasSubMenu) : QStandardItem(icon, text) {
     setData(shortcut, Qt::UserRole + 1);
@@ -6,7 +6,7 @@ MenuItem::MenuItem(const QIcon &icon, const QString &text, const QString &shortc
 }
 
 Menu::Menu(QWidget *parent) : QListView(parent), maxVisibleItems(8) {
-    setItemSize(QSize(150, 36));
+    setItemSize(QSize(150, 30));
     setMouseTracking(true);
 }
 
@@ -36,7 +36,7 @@ bool Menu::eventFilter(QObject *o, QEvent *event) {
         QPoint globalPos = mouseEvent->globalPosition().toPoint();
         QWidget *clickedWidget = QApplication::widgetAt(globalPos);
 
-        if (popup->isVisible() && !popup->isAncestorOf(clickedWidget))
+        if (popup->isVisible() && !popup->isAncestorOf(clickedWidget)) 
             fadeOutAnimation();
     }
 
@@ -77,7 +77,7 @@ void Menu::setup() {
     setVerticalScrollBar(vScroll);
     setHorizontalScrollBar(hScroll);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    setStyleSheet("QListView::item { margin: 0px; padding: 0px; } QListView { background: transparent; margin: 6px; padding: 0px; border:none; }");
+    setStyleSheet("QListView::item { margin: 0px; padding: 0px; } QListView { background: transparent; margin: 4px; padding: 0px; border:none; }");
 
     layout = new QVBoxLayout();
     layout->setContentsMargins(0, 0, 0, 0);
@@ -96,8 +96,9 @@ void Menu::setup() {
     fadeInAnimation();
     qApp->installEventFilter(this);
 
-    disconnect(this, Menu::clicked, this, Menu::onItemClicked);
-    connect(this, Menu::clicked, this, Menu::onItemClicked);
+    disconnect(this, &Menu::clicked, this, &Menu::onItemClicked);
+    connect(this, &Menu::clicked, this, &Menu::onItemClicked);
+
 }
 
 void Menu::addAction(const Actions &menuAction) {
@@ -132,17 +133,16 @@ void Menu::clearAll() {
 void Menu::updateMenuHeight() {
     int spacing = this->spacing();
     int itemsHeight = this->sizeHintForRow(0);
-    int totalItems = model.rowCount();
-    int visibleItems = std::min(totalItems, maxVisibleItems);
-
+    int totalItems = model.rowCount(); 
     if (totalItems <= 0) return;
-
-    int finalHeight = (visibleItems * itemsHeight) + spacing * (visibleItems - 1);
+    
+    int visibleItems = std::min(totalItems, maxVisibleItems);
+    int height = (visibleItems * itemsHeight) + spacing * (visibleItems - 1) + 8;
     
     setVerticalScrollBarPolicy(totalItems > visibleItems ? Qt::ScrollBarAsNeeded : Qt::ScrollBarAlwaysOff);
-    setFixedHeight(finalHeight);
-    
-    popup->setFixedSize(getItemSize().width(), finalHeight);
+
+    setFixedHeight(height);
+    popup->setFixedSize(getItemSize().width(), height);
 }
 
 void Menu::setHoveredIndex(const QModelIndex &index) {
@@ -247,11 +247,14 @@ QPoint Menu::adjustSubMenuPosition(Menu* subMenu, const QPoint& intendedPos) {
 QString Menu::clickedItemText() const { return _clickedItemText; }
 QString Menu::clickedItemShortcut() const { return _clickedItemShortcut; }
 int Menu::clickedItemIndex() const { return _clickedItemIndex; }
-void Menu::setParentMenu(Menu *parentMenu) { this->parentMenu = parentMenu; }
-void Menu::setItemSize(QSize size) { itemSize = size.expandedTo(QSize(150, 36)); }
+
+void Menu::setItemSize(QSize size) { itemSize = size.expandedTo(QSize(150, 30)); }
 QSize Menu::getItemSize() { return itemSize; }
+
 void Menu::setIconic(bool value) { isIconic = value; }
 void Menu::setDarkMode(bool value) { isDarkMode = value; }
+void Menu::setParentMenu(Menu *parentMenu) { this->parentMenu = parentMenu; }
+
 void Menu::setMaxVisibleItems(int items) { maxVisibleItems = items; }
 int Menu::getMaxVisibleItems() { return maxVisibleItems; }
 
@@ -262,11 +265,11 @@ void Menu::mouseMoveEvent(QMouseEvent *event) {
 
     setHoveredIndex(index);
 
-        if (subMenuTimer) {
-            subMenuTimer->stop();
-            delete subMenuTimer;
-            subMenuTimer = nullptr;
-        }
+    if (subMenuTimer) {
+        subMenuTimer->stop();
+        delete subMenuTimer;
+        subMenuTimer = nullptr;
+    }
 
     for (auto it = subMenus.begin(); it != subMenus.end(); ++it) {
         Menu *subMenu = it.value();
@@ -302,7 +305,7 @@ void Menu::leaveEvent(QEvent *event) {
         for (auto *submenu : subMenus) 
             if (submenu && submenu->popup && submenu->popup->underMouse()) 
                 stillHovering = true;
-
+        
         if (!stillHovering) {  
             setHoveredIndex(QModelIndex());
             update();
@@ -316,8 +319,7 @@ void Menu::onItemClicked(const QModelIndex &index) {
     int idx = index.row();
 
     bool hasSubMenu = index.data(Qt::UserRole + 2).toBool();
-    if (hasSubMenu) 
-        return;
+    if (hasSubMenu) return;
 
     _clickedItemText = index.data(Qt::DisplayRole).toString();
     _clickedItemIndex = idx;
