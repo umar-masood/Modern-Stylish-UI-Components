@@ -1,15 +1,16 @@
 #pragma once
+#include "SmoothOpacity.h"
+
 #include <QWidget>
 #include <QPropertyAnimation>
 #include <QTimer>
-#include <QString>
+#include <QPainter>
 #include <QPaintEvent>
+#include <QColor>
+#include <QEasingCurve>
 #include <QFont>
-#include <QRect>
-#include <QPen>
-#include <QBrush>
-
-#include "SmoothOpacity.h"
+#include <QtMath>
+#include <algorithm>
 
 class LineProgress : public QWidget {
    Q_OBJECT
@@ -17,12 +18,13 @@ class LineProgress : public QWidget {
    public:
    explicit LineProgress(QWidget *parent = nullptr);
     
-   void setSize(QSize s);
+   void setFixedSize(QSize s);
    void setDarkMode(bool value);
+   void setText(const QString &text);
+   void setIndeterminate(bool value);   
+
    void start();
    void stop();
-   void setText(const QString &text);
-   void setIndeterminate(bool value);
 
    void setValue(int value);
    int getValue() const;
@@ -30,10 +32,10 @@ class LineProgress : public QWidget {
    protected:
    void paintEvent(QPaintEvent *event) override;
 
-   private:
+   private: 
    void fadeInAnimation();
    void fadeOutAnimation();
-
+   
    bool isDarkMode = false;
    bool isIndeterminate = false;
 
@@ -52,5 +54,4 @@ class LineProgress : public QWidget {
    SmoothOpacity *op = nullptr;
 
    QString loaderText;
-
-}; 
+};
