@@ -1,27 +1,35 @@
-#ifndef ROUNDEDBOX_H
-#define ROUNDEDBOX_H
+#pragma once
 
-#include <QtWidgets>
+#include <QWidget>
+#include <QPainter>
+#include <QPainterPath>
+#include <QPen>
+#include <QColor>
+#include <QFont>
+#include <QFontMetrics>
+#include <QPaintEvent>
+#include <QSize>
+#include <QString>
 
 class RoundedBox : public QWidget {
     Q_OBJECT
 
-public:
+    public:
     explicit RoundedBox(const QString &txt = "", QWidget *parent = nullptr);
     virtual ~RoundedBox() = default;
+
     void setDarkMode(bool value);
     void setAsToolTip(bool value);
+    void setText(const QString &text);
     QSize sizeHint() const;
 
-protected:
+    protected:
     void paintEvent(QPaintEvent *event) override;
 
-private:
+    private:
     void updateSizeForText(); 
 
     bool isDarkMode;
     bool useAsToolTip;
     QString text;
 };
-
-#endif // ROUNDEDBOX_H
