@@ -1,7 +1,7 @@
-#ifndef SMOOTHOPACITY_H
-#define SMOOTHOPACITY_H
+#pragma once
 
-#include <QtWidgets>
+#include <QGraphicsOpacityEffect>
+#include <QWidget>
 
 class SmoothOpacity : public QGraphicsOpacityEffect {
    Q_OBJECT
@@ -12,5 +12,3 @@ class SmoothOpacity : public QGraphicsOpacityEffect {
    void setOpacity(qreal op);
    qreal getOpacity();
 };
-
-#endif
