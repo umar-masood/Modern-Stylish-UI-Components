@@ -1,20 +1,13 @@
 #include "RoundedBox.h"
-#include <QPainter>
-#include <QPainterPath>
-#include <QBitmap>
-#include <QFontMetrics>
 
-RoundedBox::RoundedBox(const QString &txt, QWidget *parent)
-    : QWidget(nullptr), isDarkMode(false), text(txt), useAsToolTip(false)
-{
+RoundedBox::RoundedBox(const QString &txt, QWidget *parent) : QWidget(nullptr), isDarkMode(false), text(txt), useAsToolTip(false) {
     setWindowFlags(Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
     setWindowFlag(Qt::Tool);
     setAsToolTip(false);
 }
 
-void RoundedBox::setDarkMode(bool value)
-{
+void RoundedBox::setDarkMode(bool value) {
     isDarkMode = value;
     update();
 }
@@ -24,9 +17,12 @@ void RoundedBox::setAsToolTip(bool value) {
     update();
 }
 
-void RoundedBox::updateSizeForText() {
-    resize(sizeHint());
+void RoundedBox::setText(const QString &text) {
+    this->text = text;
+    update();
 }
+
+void RoundedBox::updateSizeForText() { resize(sizeHint()); }
 
 QSize RoundedBox::sizeHint() const {
     QFont font;
@@ -39,9 +35,7 @@ QSize RoundedBox::sizeHint() const {
     return QSize(s.width() + 24, s.height() + 12);
 }
 
-
-void RoundedBox::paintEvent(QPaintEvent *event)
-{
+void RoundedBox::paintEvent(QPaintEvent *event) {
     Q_UNUSED(event);
 
     // Colors
@@ -52,11 +46,11 @@ void RoundedBox::paintEvent(QPaintEvent *event)
     painter.setRenderHints(QPainter::Antialiasing);
     painter.setBrush(BG);
     QPen pen(BR);
-    pen.setWidthF(0.5);
+    pen.setWidthF(0.3);
     painter.setPen(pen);
 
     QPainterPath path;
-    path.addRoundedRect(rect().adjusted(1.5, 1.5, -1.5, -1.5), 6, 6);
+    path.addRoundedRect(rect().adjusted(1, 1, -1, -1), 6, 6);
     painter.drawPath(path);
 
     // Text
