@@ -1,14 +1,22 @@
-#ifndef SCROLLBAR_H
-#define SCROLLBAR_H
+#pragma once
 
-#include <QtWidgets>
+#include <QScrollBar>
+#include <QPropertyAnimation>
+#include <QPainter>
+#include <QPaintEvent>
+#include <QColor>
+#include <QEasingCurve>
+#include <QMouseEvent>
+#include <QEnterEvent>
+#include <QEvent>
+#include <algorithm>
 
 class ScrollBar : public QScrollBar {
   Q_OBJECT
   Q_PROPERTY(qreal opacity READ getOpacity WRITE setOpacity)
   Q_PROPERTY(qreal handle READ getHandle WRITE setHandle)
 
-public:
+  public:
   explicit ScrollBar(Qt::Orientation orientation, QWidget *parent = nullptr);
   explicit ScrollBar(QWidget *parent = nullptr);
   ~ScrollBar() noexcept override = default;
@@ -21,13 +29,13 @@ public:
   void setHandle(qreal w);
   qreal getHandle();
 
-protected:
+  protected:
   void paintEvent(QPaintEvent *event) override;
   void mousePressEvent(QMouseEvent *event) override;
   void enterEvent(QEnterEvent *event) override;
   void leaveEvent(QEvent *event) override;
 
-private:
+  private:
   void init();
 
   bool isPressed = false;
@@ -40,5 +48,3 @@ private:
   qreal handle = 2.0;
   QPropertyAnimation *animation2 = nullptr;
 };
-
-#endif // SCROLLBAR_H
