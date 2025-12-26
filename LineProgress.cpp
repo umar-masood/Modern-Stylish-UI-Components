@@ -1,5 +1,4 @@
 #include "LineProgress.h"
-#include <QtMath>
 
 LineProgress::LineProgress(QWidget *parent) : QWidget(parent) {
    hide();   
@@ -13,11 +12,11 @@ LineProgress::LineProgress(QWidget *parent) : QWidget(parent) {
    animation->setEasingCurve(QEasingCurve::InOutQuad);
 }
 
-void LineProgress::setSize(QSize s) {
+void LineProgress::setFixedSize(QSize s) {
    const QSize minimumSize(250, 50);
    int width = qMax(s.width(), minimumSize.width());
    int height = minimumSize.height();
-   setFixedSize(width, height);
+   QWidget::setFixedSize(width, height);
    update();
 }
 
@@ -96,7 +95,7 @@ void LineProgress::paintEvent(QPaintEvent *event) {
    QRect trackRec = QRect(margin, 0, trackW, lineHeight);
    painter.drawRoundedRect(trackRec, radius, radius);
 
-   painter.setBrush(QColor("#109AC7"));
+   painter.setBrush(QColor("#0191DF"));
 
    int wBar = trackW / 3;
    int xBar = margin + int(offset * trackW);
