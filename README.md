@@ -19,6 +19,19 @@ btn->setSecondary(true);
 btn->setDarkMode(true);
 btn->setShadow(true);
 ```
+Detail:
+
+```setDisplayMode(Button::DisplayMode mode)```
+
+There are four modes of button:
+
+a. TextOnly
+
+b. IconOnly
+
+c. TextUnderIcon
+
+d. IconText
 
 > [!NOTE]
 > By default the value of setSecondary(), setShadow(), setDarkMode(), setHyperLink(), setLoaderButton(), setGradientColor() is false unless you set it explicitly to True.
