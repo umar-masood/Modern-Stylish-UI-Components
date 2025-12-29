@@ -1,16 +1,32 @@
-🌟 QtNovaUI - Component Set for Windows & MacOS (Supported Cross-Platform)
+🌟 QtNovaUI - UI Library for Windows & MacOS (Supported Cross-Platform)
 =====================================================
-Crafted with Qt, C++ , QSS — Art Meets Function
-_______________________________________________
-
-This collection of custom UI components redefines desktop application design in Qt. Every element has been hand-built with precision using C++ and Qt, and styled with the elegance of Qt Style Sheets (QSS) to evoke a modern, smooth, and responsive feel.
-Below is a showcase of the components and their aesthetic purpose:
+Crafted with Qt, C++ , QSS — Art Meets Function. This collection of custom UI components redefines desktop application design in Qt. Every element has been hand-built with precision using C++ and Qt, and styled with the elegance of Qt Style Sheets (QSS) to evoke a modern, smooth, and responsive feel.
 
 🧩 Core Components
 ===================
 🔘 Button
---------------------------
+---
 Minimal yet powerful. This custom button is designed with elegant hover transitions, shadows, and support for icons. The Dialog_Button variant harmonizes seamlessly with dialogs, offering consistent styling across modals.
+
+**How to use it?**
+```cpp
+#include "Button.h"
+
+Button *btn = new Button;
+btn->setText("Click Here");
+btn->setFixedSize(QSize(200, 36));
+btn->setSecondary(true);
+btn->setDarkMode(true);
+btn->setShadow(true);
+```
+> [!NOTE]
+> By default the value of setSecondary(), setShadow(), setDarkMode(), setHyperLink(), setLoaderButton(), setGradientColor() is false unless you set it explicitly to True.
+> When the button is secondary, the shadow will automatically disabled.
+> If you want to use loader inside a button, then you must pass empty string to setText() along with True value to setLoaderButton(), it will trigger the loader to show visually.
+
+> [!CAUTION]
+> Make sure you have set Display Mode of button using setDisplayMode().
+> You can either set Unicode Icon or Pixmap. You cannot set both at same time.
 
 📥 ComboBox
 ------------
