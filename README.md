@@ -21,8 +21,10 @@ btn->setShadow(true);
 ```
 > [!NOTE]
 > By default the value of setSecondary(), setShadow(), setDarkMode(), setHyperLink(), setLoaderButton(), setGradientColor() is false unless you set it explicitly to True.
+> 
 > When the button is secondary, the shadow will automatically disabled.
 > If you want to use loader inside a button, then you must pass empty string to setText() along with True value to setLoaderButton(), it will trigger the loader to show visually.
+> In case if you do not set size of button explicitly, it will adjust the size of button dynamically based on its content.
 
 > [!CAUTION]
 > Make sure you have set Display Mode of button using setDisplayMode().
