@@ -8,7 +8,7 @@ Crafted with Qt, C++ , QSS — Art Meets Function. This collection of custom UI 
 ---
 Minimal yet powerful. This custom button is designed with elegant hover transitions, shadows, and support for icons. The Dialog_Button variant harmonizes seamlessly with dialogs, offering consistent styling across modals.
 
-**How to use it?**
+**Example: How to use it?**
 ```cpp
 #include "Button.h"
 
@@ -19,6 +19,7 @@ btn->setSecondary(true);
 btn->setDarkMode(true);
 btn->setShadow(true);
 ```
+
 > [!NOTE]
 > By default the value of setSecondary(), setShadow(), setDarkMode(), setHyperLink(), setLoaderButton(), setGradientColor() is false unless you set it explicitly to True.
 > 
