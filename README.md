@@ -119,8 +119,6 @@ btn->setFontProperties(
 > [!NOTE]
 > Unicode icons always use Segoe Fluent Icons, regardless of font settings.
 
-⚠ Default Values
-
 > [!NOTE]
 > All of the following are false by default:
 > setSecondary()
