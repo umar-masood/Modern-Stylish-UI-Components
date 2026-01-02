@@ -4,45 +4,61 @@ Crafted with Qt, C++ , QSS — Art Meets Function. This collection of custom UI 
 
 🧩 Core Components
 ===================
-🔘 Button
----
-Minimal yet powerful. This custom button is designed with elegant hover transitions, shadows, and support for icons. The Dialog_Button variant harmonizes seamlessly with dialogs, offering consistent styling across modals.
+# 🔘 Button Component
 
-**Example: How to use it?**
+*A modern, animated, and highly customizable Qt button*. The **Button** component is a custom `QPushButton` replacement built using **QPainter**, **Qt animations**, and **state-aware rendering**.
+
+## ✨ Features
+
+- Multiple display modes (text, icon, mixed)
+- Animated shadow on hover
+- Dark mode support
+- Primary / Secondary styles
+- Gradient backgrounds with hover animation
+- Unicode & Pixmap icon support
+- Built-in loader (spinner)
+- Hyperlink-style buttons
+- Automatic size calculation
+
+### Basic Usage
 ```cpp
-#include "Button.h"
-
 Button *btn = new Button;
 btn->setText("Click Here");
+btn->setDisplayMode(Button::TextOnly);
 btn->setFixedSize(QSize(200, 36));
 btn->setSecondary(true);
 btn->setDarkMode(true);
 btn->setShadow(true);
 ```
-Detail:
+> [!TIP]
+> If no fixed size is set, the button automatically adjusts its size based on content and display mode.
 
-```setDisplayMode(Button::DisplayMode mode)```
+### Display Modes
+```setDisplayMode(Button::DisplayMode mode);```
+1. TextOnly      	  Text-only button
+2. IconOnly	        Icon-only button
+3. IconText	        Icon on left, text on right
+4. TextUnderIcon	  Icon above text
+> [!IMPORTANT]
+> You must set a display mode using setDisplayMode().
 
-There are four modes of button:
+### Icon Usage
+**Pixmap Icons**
+```cpp
+btn->setIconPaths(":/icons/light.svg", ":/icons/dark.svg");
+btn->setIconSize(QSize(18, 18));
+```
+Automatically switches icons based on dark mode
 
-a. TextOnly
+**Unicode Icons**
+```cpp
+btn->setUnicodeIcon(QChar(0xE8FB), 18);
+```
+Uses Segoe Fluent Icons. Ideal for fluent-style UI
 
-b. IconOnly
+> [!WARNING]
+> You cannot use Unicode icons and Pixmap icons together.
 
-c. TextUnderIcon
-
-d. IconText
-
-> [!NOTE]
-> By default the value of setSecondary(), setShadow(), setDarkMode(), setHyperLink(), setLoaderButton(), setGradientColor() is false unless you set it explicitly to True.
-> 
-> When the button is secondary, the shadow will automatically disabled.
-> If you want to use loader inside a button, then you must pass empty string to setText() along with True value to setLoaderButton(), it will trigger the loader to show visually.
-> In case if you do not set size of button explicitly, it will adjust the size of button dynamically based on its content.
-
-> [!CAUTION]
-> Make sure you have set Display Mode of button using setDisplayMode().
-> You can either set Unicode Icon or Pixmap. You cannot set both at same time.
 
 📥 ComboBox
 ------------
