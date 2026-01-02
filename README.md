@@ -4,12 +4,10 @@ Crafted with Qt, C++ , QSS — Art Meets Function. This collection of custom UI 
 
 🧩 Core Components
 ===================
-# 🔘 Button Component
-
+# 🔘 Button
 *A modern, animated, and highly customizable Qt button*. The **Button** component is a custom `QPushButton` replacement built using **QPainter**, **Qt animations**, and **state-aware rendering**.
 
 ## ✨ Features
-
 - Multiple display modes (text, icon, mixed)
 - Animated shadow on hover
 - Dark mode support
@@ -35,10 +33,10 @@ btn->setShadow(true);
 
 ### Display Modes
 ```setDisplayMode(Button::DisplayMode mode);```
-1. TextOnly      	  Text-only button
-2. IconOnly	        Icon-only button
-3. IconText	        Icon on left, text on right
-4. TextUnderIcon	  Icon above text
+1. TextOnly      	  
+2. IconOnly	        
+3. IconText	        
+4. TextUnderIcon	 
 > [!IMPORTANT]
 > You must set a display mode using setDisplayMode().
 
@@ -58,6 +56,79 @@ Uses Segoe Fluent Icons. Ideal for fluent-style UI
 
 > [!WARNING]
 > You cannot use Unicode icons and Pixmap icons together.
+
+### Styling Options
+**Primary / Secondary**
+```cpp
+btn->setSecondary(true);
+```
+> [!NOTE]
+> When Secondary is enabled, the shadow is automatically disabled.
+
+### Dark Mode
+```cpp
+btn->setDarkMode(true);
+```
+Adjusts colors, borders, icons, shadows. Loader spinner adapts automatically.
+
+### Shadow Effect
+```cpp
+btn->setShadow(true);
+```
+Disabled automatically for Secondary buttons.
+
+### Gradient Button
+```cpp
+btn->setGradientColor(true, "#008EDE", "#1BB3E6");
+btn->setHoverGradientColor("#3FC1FF");
+```
+> [!IMPORTANT]
+> Gradient is disabled automatically in Hyperlink mode.
+
+### HyperLink Button
+```cpp
+btn->setHyperLink(true);
+btn->setHyperLinkColors(QColor("#008EDE"), QColor("#1BB3E6"));
+```
+- Text-only rendering
+- No background or border
+- Hover color transition
+- Ideal for inline actions like “Learn more”.
+
+### Loader Button
+```cpp
+btn->setLoaderButton(true);
+btn->setText("");
+```
+- Empty text triggers spinner
+- Spinner is centered automatically
+- Text restores when non-empty
+
+> [!WARNING]
+> Loader will not appear unless setText("") is used.
+
+### Font Customization
+```cpp
+btn->setFontProperties(
+  "Segoe UI",
+  10,
+  true,   // bold
+  false   // italic
+);
+```
+> [!NOTE]
+> Unicode icons always use Segoe Fluent Icons, regardless of font settings.
+
+⚠ Default Values
+
+> [!NOTE]
+> All of the following are false by default:
+> setSecondary()
+> setShadow()
+> setDarkMode()
+> setHyperLink()
+> setLoaderButton()
+> setGradientColor()
 
 
 📥 ComboBox
