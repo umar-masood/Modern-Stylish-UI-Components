@@ -121,12 +121,12 @@ btn->setFontProperties(
 
 > [!NOTE]
 > All of the following are false by default:
-> setSecondary()
-> setShadow()
-> setDarkMode()
-> setHyperLink()
-> setLoaderButton()
-> setGradientColor()
+> `setShadow()`
+> `setDarkMode()`
+> `setSecondary()`
+> `setHyperLink()`
+> `setLoaderButton()`
+> `setGradientColor()`
 
 
 # 📥 ComboBox
@@ -187,7 +187,7 @@ box->addIcons(
 );
 ```
 > [!CAUTION]
-> setIconic(true) must be enabled before adding icons.
+> `setIconic(true)` must be enabled before adding icons.
 
 ## Editable Mode
 ```cpp
