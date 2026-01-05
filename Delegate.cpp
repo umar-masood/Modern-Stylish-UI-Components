@@ -1,27 +1,12 @@
 #include "Delegate.h"
 
-Delegate::Delegate(const QSize& itemSize, QObject *parent)
-    : QStyledItemDelegate(parent), m_itemSize(itemSize) {}
+Delegate::Delegate(const QSize& itemSize, QObject *parent) : QStyledItemDelegate(parent), m_itemSize(itemSize) {}
 
-void Delegate::setDarkMode(bool value) {
-    isDarkMode = value;
-}
-
-void Delegate::setIconic(bool value) {
-    isIconic = value;
-}
-
-void Delegate::setAsMenu(bool value) {
-    isMenu = value;
-}
-
-void Delegate::setDelegateSize(QSize size) {
-    m_itemSize = size;
-}
-
-void Delegate::setHoveredIndex(const QModelIndex &index) {
-    hoveredIndex = index;
-}
+void Delegate::setDarkMode(bool value) { isDarkMode = value; }
+void Delegate::setIconic(bool value) { isIconic = value; }
+void Delegate::setAsMenu(bool value) { isMenu = value; }
+void Delegate::setDelegateSize(QSize size) { m_itemSize = size; }
+void Delegate::setHoveredIndex(const QModelIndex &index) { hoveredIndex = index; }
 
 void Delegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const {
     painter->save();
@@ -30,19 +15,19 @@ void Delegate::paint(QPainter *painter, const QStyleOptionViewItem &option, cons
     QColor Normal = Qt::transparent;
     QColor Light = QColor::fromString("#F0F0F0");
     QColor Dark = QColor::fromString("#383838");
-
     QColor current;
 
+    // States
     bool isHovered = (index == hoveredIndex);
     bool isSelected = option.state & QStyle::State_Selected;
     bool isMouseOver = option.state & QStyle::State_MouseOver;
     
-    if (isHovered || isSelected || isMouseOver) {
+    if (isHovered || isSelected || isMouseOver) 
         current = isDarkMode ? Dark : Light;
-    } else {
+    else 
         current = Normal;
-    }
-
+    
+    // Drawing Background
     QRect fullRec = option.rect;
     painter->setPen(Qt::NoPen);
     painter->setBrush(current);
@@ -55,21 +40,20 @@ void Delegate::paint(QPainter *painter, const QStyleOptionViewItem &option, cons
     bool hasSubMenu = index.data(Qt::UserRole + 2).toBool();
 
     // Icon geometry
-    const QSize IconSize = QSize(20, 20);
+    const QSize IconSize = QSize(18, 18);
     const int iconX = 12;
     int iconY;
 
     const int tX = isIconic ? (iconX + IconSize.width() + 12) : iconX;
-    const int tY = fullRec.y();
+    const int tY = fullRec.y() - 1;
 
     // Shortcut width based on content
     int shortcutW = 0;
-    QFont shortcutFont("Segoe UI", 10, QFont::Normal);
+    QFont shortcutFont("Segoe UI", 10, QFont::Medium);
     QFontMetrics fmShortcut(shortcutFont);
 
-    if (isMenu && !shortcutText.isEmpty()) {
+    if (isMenu && !shortcutText.isEmpty()) 
         shortcutW = qMin(fmShortcut.horizontalAdvance(shortcutText), 120);
-    }
 
     const int spacing = (shortcutW > 0) ? 12 : 0;
     const int tW = fullRec.width() - (tX + spacing + shortcutW + 12);
@@ -79,27 +63,27 @@ void Delegate::paint(QPainter *painter, const QStyleOptionViewItem &option, cons
     QRect shortcutRect(fullRec.right() - shortcutW - 12, tY, shortcutW, tH);
 
     if (!icon.isNull() && isIconic) {
-    QPixmap pixmap = icon.pixmap(IconSize);
-    iconY = fullRec.y() + (fullRec.height() - IconSize.height()) / 2;
-    painter->drawPixmap(iconX, iconY, pixmap);
+        QPixmap pixmap = icon.pixmap(IconSize);
+        iconY = fullRec.y() + (fullRec.height() - IconSize.height()) / 2;
+        painter->drawPixmap(iconX, iconY, pixmap);
     }
 
     if (shortcutText.isEmpty() && hasSubMenu) {
-    QPixmap pixmap(":/icons/arrow-right.svg");
-    pixmap = pixmap.scaled(IconSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    iconY = fullRec.y() + (fullRec.height() - pixmap.height()) / 2;
-    painter->drawPixmap(fullRec.right() - IconSize.width() - 12, iconY, pixmap);
+        QPixmap pixmap(":/icons/ComponentsIcons/arrow-right.svg");
+        pixmap = pixmap.scaled(IconSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        iconY = fullRec.y() + (fullRec.height() - pixmap.height()) / 2;
+        painter->drawPixmap(fullRec.right() - IconSize.width() - 12, iconY, pixmap);
     }
 
     // Text Font & Color
-    QFont font("Segoe UI", 11, QFont::Normal);
+    QFont font("Segoe UI", 10, QFont::Medium);
     painter->setFont(font);
     QFontMetrics f(font);
     QString elidedText = f.elidedText(text, Qt::ElideRight, tW);
 
     QColor _NormalLight = Qt::black;
     QColor _NormalDark = Qt::white;
-    QColor _Selected = QColor::fromString("#109AC7");
+    QColor _Selected = QColor::fromString("#0191DF");
     QColor _current = (option.state & QStyle::State_Selected) ? _Selected : (isDarkMode ? _NormalDark : _NormalLight);
 
     painter->setPen(_current);
@@ -108,13 +92,11 @@ void Delegate::paint(QPainter *painter, const QStyleOptionViewItem &option, cons
     // Draw Shortcut Text if exists
     if (shortcutW > 0) {
         painter->setFont(shortcutFont);
-        QColor color = QColor("#A1A1A1");
+        QColor color = QColor("#8D8D8D");
         painter->setPen(color);
         painter->drawText(shortcutRect, Qt::AlignRight | Qt::AlignVCenter, shortcutText);
     }
     painter->restore();
 }
 
-QSize Delegate::sizeHint(const QStyleOptionViewItem &, const QModelIndex &) const {
-    return QSize(m_itemSize.width(), m_itemSize.height());
-}
+QSize Delegate::sizeHint(const QStyleOptionViewItem &, const QModelIndex &) const { return QSize(m_itemSize.width(), m_itemSize.height()); }
