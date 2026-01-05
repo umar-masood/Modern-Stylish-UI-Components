@@ -9,24 +9,23 @@ find_package(Qt6 REQUIRED Core Gui Widgets)
 
 add_executable(QtNovaUI
     # UI Components
-    components/Button.cpp
-    components/CheckBox.cpp
-    components/ComboBox.cpp
-    components/Delegate.cpp
-    components/Dialog.cpp
-    components/LineProgress.cpp
-    components/Menu.cpp
-    components/Rectangle.cpp
-    components/RoundedBox.cpp
-    components/ScrollBar.cpp
-    components/SmoothOpacity.cpp
-    components/SmoothShadow.cpp
-    components/SpinnerProgress.cpp
-    components/Text.cpp
-    components/TextField.cpp
-    components/Toggle.cpp
-    components/ToolTip.cpp
-    components/Seperator.cpp
+    Button.cpp
+    CheckBox.cpp
+    ComboBox.cpp
+    Delegate.cpp
+    Dialog.cpp
+    LineProgress.cpp
+    Menu.cpp
+    Rectangle.cpp
+    RoundedBox.cpp
+    ScrollBar.cpp
+    SmoothOpacity.cpp
+    SmoothShadow.cpp
+    SpinnerProgress.cpp
+    TextField.cpp
+    Toggle.cpp
+    ToolTip.cpp
+    Seperator.cpp
 
     # Entry Point of App
     # main.cpp
@@ -36,4 +35,5 @@ add_executable(QtNovaUI
 )
 
 target_link_libraries(QtNovaUI PRIVATE Qt6::Core Qt6::Gui Qt6::Widgets)
+
 set_target_properties(QtNovaUI PROPERTIES WIN32_EXECUTABLE TRUE)
