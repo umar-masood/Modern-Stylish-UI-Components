@@ -10,6 +10,7 @@ void Toggle::setShadow(bool value) {
 }
 
 void Toggle::setDarkMode(bool value) { isDarkMode = value; }
+
 void Toggle::init() {
   setFixedSize(38, 22);
   setFocusPolicy(Qt::NoFocus);
@@ -184,7 +185,7 @@ void Toggle::leaveEvent(QEvent *event) {
 }
 
 void Toggle::mousePressEvent(QMouseEvent *event) {
-  if (event->button() == Qt::LeftButton) {
+  if(event->button() == Qt::LeftButton) {
     isDragging = false;
     dragStartX = event->pos().x();
     dragOffset = offset;

@@ -46,7 +46,7 @@ void RoundedBox::paintEvent(QPaintEvent *event) {
     painter.setRenderHints(QPainter::Antialiasing);
     painter.setBrush(BG);
     QPen pen(BR);
-    pen.setWidthF(0.3);
+    pen.setWidthF(0.2);
     painter.setPen(pen);
 
     QPainterPath path;

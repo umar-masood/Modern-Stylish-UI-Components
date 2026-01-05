@@ -21,10 +21,7 @@ void TextField::setTextFieldIcon(bool value) {
     updateStyle();
 }
 
-void TextField::setTextFieldIconSize(QSize s) { 
-    if (textFieldIcon) 
-        textFieldIconSize = s; 
-}
+void TextField::setTextFieldIconSize(QSize s) { if (textFieldIcon) textFieldIconSize = s; }
 
 void TextField::setIconPaths(const QString &lightIcon, const QString &darkIcon) {
     if (textFieldIcon) {
@@ -252,13 +249,13 @@ void TextField::contextMenuEvent(QContextMenuEvent *event) {
     const bool hasSelection = this->hasSelectedText();
 
     static const QHash<QString , QString> icons = {
-        { "Copy", ":/icons/copy.svg" },
-        { "Cut", ":/icons/cut.svg" },
-        { "Paste", ":/icons/paste.svg" },
-        { "Delete", ":/icons/delete.svg" },
-        { "Select All", ":/icons/select-all.svg" },
-        { "Undo", ":/icons/undo.svg" },
-        { "Redo", ":/icons/redo.svg" }
+        { "Copy", ":/icons/ComponentsIcons/copy.svg" },
+        { "Cut", ":/icons/ComponentsIcons/cut.svg" },
+        { "Paste", ":/icons/ComponentsIcons/paste.svg" },
+        { "Delete", ":/icons/ComponentsIcons/delete.svg" },
+        { "Select All", ":/icons/ComponentsIcons/select-all.svg" },
+        { "Undo", ":/icons/ComponentsIcons/undo.svg" },
+        { "Redo", ":/icons/ComponentsIcons/redo.svg" }
     };
 
     if (hasSelection) {

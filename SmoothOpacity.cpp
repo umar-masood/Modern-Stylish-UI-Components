@@ -1,7 +1,13 @@
 #include "SmoothOpacity.h"
 
-SmoothOpacity::SmoothOpacity(QWidget *parent) : QGraphicsOpacityEffect(parent) { }
+SmoothOpacity::SmoothOpacity(QWidget *parent) : 
+  QGraphicsOpacityEffect(parent) {
+}
 
-void SmoothOpacity::setOpacity(qreal op) { QGraphicsOpacityEffect::setOpacity(op); }
+void SmoothOpacity::setOpacity(qreal op) {
+  QGraphicsOpacityEffect::setOpacity(op);
+}
 
-qreal SmoothOpacity::getOpacity() {  return QGraphicsOpacityEffect::opacity(); }
+qreal SmoothOpacity::getOpacity() { 
+  return QGraphicsOpacityEffect::opacity();
+}

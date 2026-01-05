@@ -12,7 +12,7 @@ SpinnerProgress::SpinnerProgress(QWidget *parent) : QWidget(parent) {
    animation->setEasingCurve(QEasingCurve::InOutQuad);
 }
 
-void SpinnerProgress::setSize(QSize s, bool isButtonMode) {
+void SpinnerProgress::setFixedSize(QSize s, bool isButtonMode) {
    const QSize minimumSize(250, 140);
    int width, height;
 
@@ -25,7 +25,7 @@ void SpinnerProgress::setSize(QSize s, bool isButtonMode) {
       width = s.width(); height = s.height();
    }
 
-   setFixedSize(width, height);
+   QWidget::setFixedSize(width, height);
    update();
 }
 

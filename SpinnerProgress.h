@@ -1,5 +1,6 @@
 #pragma once
 #include "SmoothOpacity.h"
+
 #include <QWidget>
 #include <QPainter>
 #include <QPaintEvent>
@@ -24,7 +25,7 @@ public:
    void stop();
    void setText(const QString &text);
    void setDarkMode(bool value);
-   void setSize(QSize s, bool forButton = false);
+   void setFixedSize(QSize s, bool forButton = false);
    void setIndeterminate(bool value);
    void setValue(int value);
    int getValue() const;
