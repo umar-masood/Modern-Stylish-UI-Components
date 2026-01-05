@@ -1,14 +1,10 @@
 #include "CheckBox.h"
-#include <QPainter>
-#include <QPen>
-#include <QFontMetrics>
 
-CheckBox::CheckBox(const QString &text, QWidget *parent)
-    : QWidget(parent), text(text)
+CheckBox::CheckBox(const QString &text, QWidget *parent) : QWidget(parent), text(text)
 {
    setAttribute(Qt::WA_TranslucentBackground);
    setAttribute(Qt::WA_Hover);
-   pixmap = QPixmap(":/icons/checkbox.png").scaled(16, 16, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+   pixmap = QPixmap(":/icons/ComponentsIcons/checkbox.png").scaled(16, 16, Qt::KeepAspectRatio, Qt::SmoothTransformation);
    setFixedSize(20 + 12 + QFontMetrics(font()).horizontalAdvance(text), 22);
 }
 
@@ -32,9 +28,9 @@ void CheckBox::setChecked(bool value) {
 
 QFont CheckBox::font() const {
    QFont fnt;
-   fnt.setPixelSize(12);
+   fnt.setPointSize(10);
    fnt.setFamily("Segoe UI");
-   fnt.setWeight(QFont::Medium);
+   fnt.setWeight(QFont::Normal);
    return fnt;
 }
 
@@ -46,14 +42,14 @@ void CheckBox::paintEvent(QPaintEvent *) {
 
    QPen pen;
    pen.setWidthF(isChecked() ? 1.0 : 0.5);
-   pen.setColor(isChecked() ? QColor("#109AC7") : (isDarkMode ? QColor("#4D4D4D") : QColor("#CCCCCC")));
+   pen.setColor(isChecked() ? QColor("#0191DF") : (isDarkMode ? QColor("#4D4D4D") : QColor("#CCCCCC")));
    pen.setStyle(Qt::SolidLine);
    pen.setJoinStyle(Qt::RoundJoin);
    painter.setPen(pen);
 
    QColor bg_color;
    if (isChecked()) 
-      bg_color = isHover ? QColor("#1BB3E6") : QColor("#109AC7");
+      bg_color = isHover ? QColor("#1BB3E6") : QColor("#0191DF");
    else if (isHover) 
       bg_color = isDarkMode ? QColor("#323232") : QColor("#F6F6F6");
    else 
@@ -71,8 +67,8 @@ void CheckBox::paintEvent(QPaintEvent *) {
    painter.setFont(font());
    painter.setPen(QPen(QColor("#8D8D8D")));
 
-   QRect textRec(rec.right() + 12, 0, width() - rec.width() - 12, height());
-   painter.drawText(textRec, Qt::AlignVCenter | Qt::AlignLeft, text);
+   QRect textRec(rec.right() + 12, 2, width() - rec.width() - 12, height());
+   painter.drawText(textRec, text);
 }
 
 void CheckBox::enterEvent(QEnterEvent *event)
@@ -94,4 +90,3 @@ void CheckBox::mousePressEvent(QMouseEvent *event)
    setChecked(!_isChecked);
    QWidget::mousePressEvent(event);
 }
-
