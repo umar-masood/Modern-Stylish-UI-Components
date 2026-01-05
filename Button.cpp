@@ -29,7 +29,6 @@ void Button::init() {
 
 void Button::setShadow(bool value) {
   isShadowEnabled = value;
-
   (isShadowEnabled) ? setGraphicsEffect(effect) : setGraphicsEffect(nullptr);
 }
 
@@ -202,15 +201,13 @@ void Button::drawContent(QPainter &painter, const QPixmap &pixmap) {
   case IconText: {
     const int spacing = 8;    
     const int iconX = 10;
-
     int iconH = isUnicodeIcon ? unicodeIconSize : pixmap.height();
     int iconW = isUnicodeIcon ? unicodeIconSize : pixmap.width();
     int iconY = (height() - iconH) / 2;
-
     int textX = iconX + iconW + spacing;
     int textY = 0;
-
     int buttonWidth = iconX + iconW + spacing + textW + 2 * spacing;
+ 
     if (!customSize.isValid()) 
       QPushButton::setFixedSize(buttonWidth, 36);
 
