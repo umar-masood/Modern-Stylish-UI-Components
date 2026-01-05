@@ -69,7 +69,7 @@ void Delegate::paint(QPainter *painter, const QStyleOptionViewItem &option, cons
     }
 
     if (shortcutText.isEmpty() && hasSubMenu) {
-        QPixmap pixmap(":/icons/ComponentsIcons/arrow-right.svg");
+        QPixmap pixmap(":/icons/arrow-right.svg");
         pixmap = pixmap.scaled(IconSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
         iconY = fullRec.y() + (fullRec.height() - pixmap.height()) / 2;
         painter->drawPixmap(fullRec.right() - IconSize.width() - 12, iconY, pixmap);
@@ -100,3 +100,4 @@ void Delegate::paint(QPainter *painter, const QStyleOptionViewItem &option, cons
 }
 
 QSize Delegate::sizeHint(const QStyleOptionViewItem &, const QModelIndex &) const { return QSize(m_itemSize.width(), m_itemSize.height()); }
+
