@@ -20,6 +20,8 @@ Crafted with Qt, C++ , QSS — Art Meets Function. This collection of custom UI 
 
 ### Basic Usage
 ```cpp
+#include "Button.h"
+
 Button *btn = new Button;
 btn->setText("Click Here");
 btn->setDisplayMode(Button::TextOnly);
