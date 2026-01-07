@@ -188,7 +188,7 @@ box->addIcons(
     {":/icons/dark/home.svg",  ":/icons/dark/settings.svg",  ":/icons/dark/user.svg"}
 );
 ```
-> [!CAUTION]
+> [!IMPORTANT]
 > `setIconic(true)` must be enabled before adding icons.
 
 ## Editable Mode
