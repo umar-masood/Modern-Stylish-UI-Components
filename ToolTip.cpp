@@ -52,11 +52,6 @@ bool ToolTip::eventFilter(QObject *obj, QEvent *event) {
         break;
 
       case QEvent::Leave:
-        timer.stop();
-        if (tooltipWidget && !isHovering) 
-          fadeOutAnimation();
-        break;
-
       case QEvent::MouseButtonPress:
       case QEvent::MouseButtonDblClick:
       case QEvent::Wheel:
@@ -64,27 +59,30 @@ bool ToolTip::eventFilter(QObject *obj, QEvent *event) {
       case QEvent::Destroy:
       case QEvent::Hide:
         timer.stop();
-        fadeOutAnimation();
-        break;
+        QTimer::singleShot(150, this, [this](){
+          if (tooltipWidget && !isHovering) 
+            fadeOutAnimation();
+        });
 
-      default:
-        break;
+      default: break;
     }
   }
 
   if (obj == tooltipWidget) {
     switch (event->type()) {
-    case QEvent::Enter:
-      isHovering = true;
-      break;
+      case QEvent::Enter:
+        isHovering = true;
+        break;
 
-    case QEvent::Leave:
-      isHovering = false;
-      if (!target || !target->underMouse())
-        fadeOutAnimation();
-      break;
+      case QEvent::Leave:
+        isHovering = false;
+        QTimer::singleShot(150, this, [this](){
+          if (tooltipWidget && !target->underMouse())
+            fadeOutAnimation();
+        });
+        break;
 
-    default: break;
+      default: break;
     }
   }
 
