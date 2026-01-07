@@ -46,27 +46,53 @@ void ToolTip::fadeOutAnimation() {
 
 bool ToolTip::eventFilter(QObject *obj, QEvent *event) {
   if (obj == target) {
-    if (event->type() == QEvent::Enter) {
-      timer.start(2000);
-    } else if (event->type() == QEvent::Leave) {
-      timer.stop();
-      QTimer::singleShot(200, this, [this]() {
-        if (tooltipWidget && !isHovering) fadeOutAnimation();
-      });
+    switch (event->type()) {
+      case QEvent::Enter:
+        timer.start(2000);
+        break;
+
+      case QEvent::Leave:
+        timer.stop();
+        if (tooltipWidget && !isHovering) 
+          fadeOutAnimation();
+        break;
+
+      case QEvent::MouseButtonPress:
+      case QEvent::MouseButtonDblClick:
+      case QEvent::Wheel:
+      case QEvent::FocusIn:
+      case QEvent::Destroy:
+      case QEvent::Hide:
+        timer.stop();
+        fadeOutAnimation();
+        break;
+
+      default:
+        break;
     }
   }
 
   if (obj == tooltipWidget) {
-    if (event->type() == QEvent::Enter) {
+    switch (event->type()) {
+    case QEvent::Enter:
       isHovering = true;
-    } else if (event->type() == QEvent::Leave) {
+      break;
+
+    case QEvent::Leave:
       isHovering = false;
-      QTimer::singleShot(200, this, [this]() {
-        if (tooltipWidget && !target->underMouse()) fadeOutAnimation();
-      });
+      if (!target || !target->underMouse())
+        fadeOutAnimation();
+      break;
+
+    default: break;
     }
   }
 
+  if (event->type() == QEvent::ApplicationStateChange || event->type() == QEvent::WindowDeactivate) {
+    timer.stop();
+    fadeOutAnimation();
+  }
+  
   return false;
 }
 
