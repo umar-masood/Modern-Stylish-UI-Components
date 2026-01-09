@@ -3,7 +3,8 @@
 Overlay::Overlay(QWidget *parent) : QWidget(parent) {
    setWindowFlags(Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
    setAttribute(Qt::WA_TranslucentBackground);
-   setAttribute(Qt::WA_TransparentForMouseEvents, false);
+   setAttribute(Qt::WA_TransparentForMouseEvents, true);
+   setMouseTracking(false);
 }
 
 void Overlay::paintEvent(QPaintEvent *event) {
@@ -23,10 +24,9 @@ void Overlay::paintEvent(QPaintEvent *event) {
 }
 
 Dialog::Dialog(QWidget *centralWidget, QWidget *parent, bool closeBtn) : SubWindow(centralWidget->size(), parent, closeBtn, false), contentWidget(centralWidget) {
-   setWindowFlag(Qt::Dialog);
-   setWindowFlag(Qt::WindowStaysOnTopHint);
-   setWindowModality(Qt::ApplicationModal);
-   
+   setWindowFlags(Qt::Dialog | Qt::WindowStaysOnTopHint);
+   setFocusPolicy(Qt::StrongFocus);
+
    if (parent) {
       overlay = new Overlay(parent);
       overlay->setGeometry(parent->rect());
@@ -46,11 +46,10 @@ void Dialog::centerInParent() {
       QScreen *screen = QApplication::screenAt(QCursor::pos());
       if (!screen)
          screen = QApplication::primaryScreen();
-
-        QRect parentRect = parentWidget()->geometry();
-        int x = parentRect.x() + (parentRect.width() - width()) / 2;
-        int y = parentRect.y() + (parentRect.height() - height()) / 2;
-        move(x, y);
+         QRect parentRect = parentWidget()->geometry();
+         int x = parentRect.x() + (parentRect.width() - width()) / 2;
+         int y = parentRect.y() + (parentRect.height() - height()) / 2;
+         move(x, y);
    }
 }
 
@@ -84,7 +83,7 @@ void Dialog::closeEvent(QCloseEvent *event) {
 bool Dialog::eventFilter(QObject *obj, QEvent *event) {
    if (obj == parentWidget() && overlay)
       if (event->type() == QEvent::Resize || event->type() == QEvent::Move)
-          overlay->setGeometry(parentWidget()->rect());
+         overlay->setGeometry(parentWidget()->rect());
    
    return SubWindow::eventFilter(obj, event);
 }
