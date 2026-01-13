@@ -26,6 +26,7 @@ void Overlay::paintEvent(QPaintEvent *event) {
 Dialog::Dialog(QWidget *centralWidget, QWidget *parent, bool closeBtn) : SubWindow(centralWidget->size(), parent, closeBtn, false), contentWidget(centralWidget) {
    setWindowFlags(Qt::Dialog | Qt::WindowStaysOnTopHint);
    setFocusPolicy(Qt::StrongFocus);
+   setWindowModality(Qt::WindowModal);
 
    if (parent) {
       overlay = new Overlay(parent);
@@ -96,3 +97,4 @@ void Dialog::setup() {
    if (contentWidget)
       layout->addWidget(contentWidget, 0, Qt::AlignCenter);
 }
+
