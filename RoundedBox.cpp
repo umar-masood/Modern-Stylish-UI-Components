@@ -70,7 +70,8 @@ void RoundedBox::paintEvent(QPaintEvent *event) {
         painter.setFont(font);
         painter.setPen(isDarkMode ? QColor("#F0F0F0") : QColor("#000000"));
         QRect text_area(12, 0, width() - 24, height());
-        painter.drawText(text_area, Qt::AlignCenter | Qt::TextWordWrap, text);
+        painter.drawText(text_area, Qt::AlignLeft | Qt::AlignVCenter | Qt::TextWordWrap, text);
     }
 }
+
 
