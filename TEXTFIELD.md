@@ -12,7 +12,7 @@ Designed with QPainter, QSS, and Qt animations, this component delivers a smooth
 - Custom context menu (Copy / Paste / Undo / Redo…)
 - Hover & focus-aware rendering
 - Font customization (family, size, weight, style)
-- Smart padding adjustment (icons, buttons, dropdowns)
+- Smart padding adjustment
 - Read-only & disabled states
 
 ## Usage
@@ -136,4 +136,3 @@ Replaces the native context menu with a fully custom Menu component.
 > - Clear button
 > - Password mode
 > - Custom context menu
-> - Right spacing
