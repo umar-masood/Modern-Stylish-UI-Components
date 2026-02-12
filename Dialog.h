@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Button.h"
-#include "../windows/subWindow/SubWindow.h"
+#include "SubWindow.h" // Please use QtNovaFramelessSubWindow for this dailog
 
 #include <QScreen>
 #include <QCursor>
@@ -24,17 +24,17 @@ class Dialog : public SubWindow
 {
    Q_OBJECT
 
-public:
-   Dialog(QWidget *centralWidget = nullptr, QWidget *parent = nullptr, bool closeBtn = true);
+   public:
+   Dialog(QWidget *centralWidget = nullptr, QWidget *parent = nullptr, bool hasCloseButton = true);
    Q_INVOKABLE void setDarkMode(bool value);
 
-protected:
+   protected:
    void showEvent(QShowEvent *event) override;
    void resizeEvent(QResizeEvent *event) override;
    void closeEvent(QCloseEvent *event) override;
    bool eventFilter(QObject* obj, QEvent* event) override;
    
-private:
+   private:
    void centerInParent();
    void setup();
 

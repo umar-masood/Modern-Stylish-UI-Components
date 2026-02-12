@@ -1,13 +1,14 @@
 #include "ToolTip.h"
 
-ToolTip::ToolTip(QWidget *target, const QString &text, bool isDarkMode) : QObject(target), target(target) {
-  tooltipWidget = new RoundedBox(!text.isEmpty() ? text : nullptr);
+ToolTip::ToolTip(QWidget *target, const QString &text, QObject *parent) : QObject(parent), _target(target) {
+  tooltipWidget = new RoundedBox(true, nullptr);
   tooltipWidget->setAsToolTip(true);
   tooltipWidget->setDarkMode(isDarkMode);
   tooltipWidget->hide();
 
-  if (this->target) 
-    this->target->installEventFilter(this);
+  if (_target) 
+    _target->installEventFilter(this);
+
   tooltipWidget->installEventFilter(this);
 
   timer.setSingleShot(true);
@@ -45,7 +46,12 @@ void ToolTip::fadeOutAnimation() {
 }
 
 bool ToolTip::eventFilter(QObject *obj, QEvent *event) {
-  if (obj == target) {
+  /*
+  if the current obj points to target:
+  -> When cursor enters that widget, a timer of 2 secs will start. If a user stays on that widget even after time passed then tooltip     will appear.
+  -> For other events, we stop the timer and starts another timer of 150 ms. If a user cursor is not inside a tooltip, it will disappear.
+  */
+  if (obj == _target) {
     switch (event->type()) {
       case QEvent::Enter:
         timer.start(2000);
@@ -68,6 +74,17 @@ bool ToolTip::eventFilter(QObject *obj, QEvent *event) {
     }
   }
 
+  /*
+    if the current obj points to tooltipWidget:
+    -> When cursor enters the tooltip, we mark it as hovering so it stays visible.
+      This prevents the tooltip from disappearing when the cursor moves from
+      target widget to tooltip.
+
+    -> When cursor leaves the tooltip, we wait for a short delay (150 ms).
+      If during this time the cursor does NOT return to the target widget,
+      the tooltip will fade out and disappear.
+  */
+
   if (obj == tooltipWidget) {
     switch (event->type()) {
       case QEvent::Enter:
@@ -77,7 +94,7 @@ bool ToolTip::eventFilter(QObject *obj, QEvent *event) {
       case QEvent::Leave:
         isHovering = false;
         QTimer::singleShot(150, this, [this](){
-          if (tooltipWidget && !target->underMouse())
+          if (tooltipWidget && !_target->underMouse())
             fadeOutAnimation();
         });
         break;
@@ -86,7 +103,7 @@ bool ToolTip::eventFilter(QObject *obj, QEvent *event) {
     }
   }
 
-  if (event->type() == QEvent::ApplicationStateChange || event->type() == QEvent::WindowDeactivate) {
+  if (event->type() == QEvent::ApplicationStateChange) {
     timer.stop();
     fadeOutAnimation();
   }
@@ -138,25 +155,36 @@ void ToolTip::setText(const QString &text){ emit textEntered(text); }
 
 void ToolTip::showToolTip() {
   if (tooltipWidget) {
-    position(target);
+    position(_target);
     fadeInAnimation();
   }
 }
 
-void ToolTip::setDarkMode(bool isDarkMode) { emit themeModeChanged(isDarkMode); }
-void ToolTip::setTargetWidget(QWidget *target) {
-  if (this->target) 
-    this->target->removeEventFilter(this);
+void ToolTip::setDarkMode(bool enable) { 
+  if (isDarkMode == enable)
+    return;
+  
+  isDarkMode = enable;
+  emit themeModeChanged(isDarkMode); 
+}
 
-  this->target = target;
+void ToolTip::setTargetWidget(QWidget *target) {
+  if (_target) 
+    _target->removeEventFilter(this);
+
+  _target = target;
+
   if (!target) {
     timer.stop();
-    if (animation) animation->stop();
+
+    if (animation) 
+      animation->stop();
+
     hide();
     return;
   }
 
-  this->target->installEventFilter(this);
+  _target->installEventFilter(this);
 }
 
 void ToolTip::onThemeModeChanged(bool enable) {
@@ -168,3 +196,4 @@ void ToolTip::hide() {
   if (tooltipWidget) 
     tooltipWidget->hide();
 }
+

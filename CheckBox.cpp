@@ -1,10 +1,11 @@
 #include "CheckBox.h"
 
-CheckBox::CheckBox(const QString &text, QWidget *parent) : QWidget(parent), text(text)
-{
+CheckBox::CheckBox(const QString &text, QWidget *parent) : QWidget(parent), text(text) {
    setAttribute(Qt::WA_TranslucentBackground);
    setAttribute(Qt::WA_Hover);
-   pixmap = QPixmap(":/icons/checkbox.png").scaled(16, 16, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+   pixmap = QPixmap(IconManager::icon(Icons::CheckBox_Check)).scaled(16, 16, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
    setFixedSize(20 + 12 + QFontMetrics(font()).horizontalAdvance(text), 22);
 }
 
@@ -51,7 +52,7 @@ void CheckBox::paintEvent(QPaintEvent *) {
    if (isChecked()) 
       bg_color = isHover ? QColor("#1BB3E6") : QColor("#0191DF");
    else if (isHover) 
-      bg_color = isDarkMode ? QColor("#323232") : QColor("#F6F6F6");
+      bg_color = isDarkMode ? QColor("#323232") : QColor("#F0F0F0");
    else 
       bg_color = isDarkMode ? QColor("#2D2D2D") : QColor("#FBFBFB");
     
@@ -59,9 +60,9 @@ void CheckBox::paintEvent(QPaintEvent *) {
    painter.drawRoundedRect(rec, 6, 6);
 
    if (!pixmap.isNull() && isChecked()) {
-   int xPos = rec.x() + (rec.width() - pixmap.width()) / 2;
-   int yPos = rec.y() + (rec.height() - pixmap.height()) / 2;
-   painter.drawPixmap(xPos, yPos, pixmap);
+      int xPos = rec.x() + (rec.width() - pixmap.width()) / 2;
+      int yPos = rec.y() + (rec.height() - pixmap.height()) / 2;
+      painter.drawPixmap(xPos, yPos, pixmap);
    }
 
    painter.setFont(font());
@@ -71,23 +72,19 @@ void CheckBox::paintEvent(QPaintEvent *) {
    painter.drawText(textRec, text);
 }
 
-void CheckBox::enterEvent(QEnterEvent *event)
-{
+void CheckBox::enterEvent(QEnterEvent *event) {
    isHover = true;
    QWidget::enterEvent(event);
    update();
 }
 
-void CheckBox::leaveEvent(QEvent *event)
-{
+void CheckBox::leaveEvent(QEvent *event) {
    isHover = false;
    QWidget::leaveEvent(event);
    update();
 }
 
-void CheckBox::mousePressEvent(QMouseEvent *event)
-{
+void CheckBox::mousePressEvent(QMouseEvent *event) {
    setChecked(!_isChecked);
    QWidget::mousePressEvent(event);
 }
-

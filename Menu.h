@@ -13,6 +13,7 @@
 #include <QGuiApplication>
 #include <QScreen>
 #include <QVBoxLayout>
+#include <QAbstractItemModel>
 #include <QAbstractItemView>
 #include <QAbstractScrollArea>
 #include <QPropertyAnimation>
@@ -25,113 +26,141 @@
 #include <algorithm>
 
 class MenuItem : public QStandardItem {
-public:
-   explicit MenuItem(const QIcon &icon, const QString &text, const QString &shortcut, bool hasSubMenu);
+   public:
+   explicit MenuItem(const QString &iconPath, const QString &text, const QString &shortcut, bool hasSubMenu);
 };
 
 class Menu : public QListView {
    Q_OBJECT
-public:
-   struct Actions {
-     const QString text;
-     bool hasSubMenu = false;
-     const QString iconPathLight = QString();
-     const QString iconPathDark = QString();
-     const QString shortcut = QString();
-   };
+
+   public:
+   struct MenuAction {
+      const QString text = QString();
+      const bool hasSubMenu = false;
+      const QString shortcut = QString(); 
+      const QString lightIcon = QString();
+      const QString darkIcon = QString();
+
+      MenuAction(const QString &actionText, const QString &actionShortcut) 
+         : text(actionText), shortcut(actionShortcut) {}
+      
+      MenuAction(const QString &actionText) : text(actionText){}
+
+      MenuAction(const QString &actionText, bool hasSubmenu, const QString &shortcutText, const QString &iconLight, const QString &iconDark) : text(actionText), hasSubMenu(hasSubmenu), shortcut(shortcutText), lightIcon(iconLight), darkIcon(iconDark) {}
+      
+   }; 
 
    explicit Menu(QWidget *parent = nullptr);
 
-   void fadeInAnimation();
-   void fadeOutAnimation();
+   void fadeIn();
+   void fadeOut();
 
    /**
-    * @param Text QString
+    * @param text QString
     * @param hasSubmenu bool
-    * @param LightModeIconPath QString
-    * @param DarkModeIconPath QString
-    * @param Shortcut QString
-    * @brief Make sure to only use shortcut or hasSubMenu, using both will cause misbehvaior
+    * @param shortcut QString
+    * @param lightIcon QString
+    * @param darkIcon QString
+    * @warning Using both Submenu and Shortcut at same time is not allowed.
     */
-   void addAction(const Actions &menuAction);
+   void addAction(const MenuAction &menuAction);
+
+   /**
+    * @brief Specify the index of the item which you want to remove.
+    */
    void removeAction(int index);
    void clearAll();
+
    /**
-    * @attention Must pass the parent Menu to setParentMenu() if you`re using submenus
+    * @attention Must pass the parent menu to setParentMenu() whenever you add a submenu
     */
    void addSubMenu(int index, Menu *submenu);
-   void move(const QPoint &point);
+   
    /**
     * @attention Must call show() before using move() in order to setup the Menu properly
     */
-   void move(int &x, int &y);
+   void move(const QPoint &point);
+  
    void hide();
-   /**
-    * @attention Call move() after show()
-    */
    void show();
-
-   /**
-    * @attention No Need to call move() or show() when using showAt()
-    */
    void showAt(QWidget *anchorWidget);
-
-   QPoint adjustSubMenuPosition(Menu *subMenu, const QPoint &intendedPos);
 
    QString clickedItemText() const;
    QString clickedItemShortcut() const;
    int clickedItemIndex() const;
 
    void setParentMenu(Menu *parentMenu);
+   
    void setItemSize(QSize size);
-   QSize getItemSize();
+   QSize itemSize();
+
    void setIconic(bool value);
    void setDarkMode(bool value);
-   void setMaxVisibleItems(int items);
-   int getMaxVisibleItems();
 
-signals:
+   void setMaxVisibleItems(int items);
+   int maxVisibleItems() const;
+
+   Delegate* delegate() const;
+   QModelIndex itemIndex(const QString &itemText);
+
+   signals:
    void itemClicked();
 
-private slots:
+   private slots:
    void onItemClicked(const QModelIndex &index);
 
-protected:
+   protected:
    void mouseMoveEvent(QMouseEvent *event) override;
    void leaveEvent(QEvent *event) override;
    bool eventFilter(QObject *o, QEvent *event) override;
    
    private:
-   void setup();   
-   void updateMenuHeight();
-   QPoint adjustXY(const QSize &s, const QPoint &p, QRect &screenGeo, bool isSubMenu);
+   void init();   
+   void updateMenu();
    void setHoveredIndex(const QModelIndex &index);
 
+   QPoint adjustXY(const QSize &s, const QPoint &p, const QRect &screenGeo, bool isSubMenu);
+   QPoint adjustSubMenuPosition(Menu *subMenu, const QPoint &intendedPos);
+
+   // Flags
    bool isIconic = false;
    bool isDarkMode = false;
-   int maxVisibleItems;
+
+   // Max Visible Items
+   int _maxVisibleItems;
    
+   // Clicked Item Shortcut, Text, Index
    QString _clickedItemShortcut;
    QString _clickedItemText;
    int _clickedItemIndex = -1;
    
+   // Submenus
    QMap<int, Menu*> subMenus;
-   
-   RoundedBox *popup = nullptr;
-   Delegate *delegate = nullptr;
-
-   QStandardItemModel model;
-   QVBoxLayout *layout = nullptr;
-   
-   ScrollBar *vScroll = nullptr;
-   ScrollBar *hScroll = nullptr;
-   
-   QPropertyAnimation *animation = nullptr;
-   Menu *parentMenu = nullptr;
-   
-   QSize itemSize;
+   QTimer *subMenuTimer = nullptr;
    QModelIndex hoveredIndex;
 
-   QTimer *subMenuTimer = nullptr;
-};
+   // Popup
+   RoundedBox *popup = nullptr;
 
+   // Delegate
+   Delegate *_delegate = nullptr;
+
+   // Model
+   QStandardItemModel _model;
+
+   // Layout
+   QVBoxLayout *layout = nullptr;
+   
+   // Scroll Bar
+   ScrollBar *vScroll = nullptr;
+   
+   // Opacity Effect & Animation for Fade In & Out Effect
+   SmoothOpacity *smooth_opacity = nullptr;
+   QPropertyAnimation *animation = nullptr;
+
+   // Parent Menu
+   Menu *parentMenu = nullptr;
+   
+   // Items Size
+   QSize _itemSize;
+};

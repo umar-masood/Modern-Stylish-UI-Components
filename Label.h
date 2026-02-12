@@ -4,7 +4,6 @@
 #include <QFont>
 #include <QWidget>
 #include <QString>
-
 #include <QPropertyAnimation>
 #include <QTimer>
 #include <QGraphicsOpacityEffect>
@@ -15,12 +14,15 @@ class Label : public QLabel {
    Q_OBJECT 
 
    public:
-   explicit Label(bool isIconic = false,
-                  const QString &family = "Segoe UI",
+   explicit Label(const QString &family = "Segoe UI",
                   int pointSize = 8,
                   QFont::Weight weight = QFont::Normal,
                   bool italic = false,
-                  const QString &text = " ",
+                  const QString &text = QString(),
+                  Qt::Alignment alignment = Qt::AlignCenter,
+                  QWidget *parent = nullptr);
+   
+   explicit Label(bool isIconic = false,
                   Qt::Alignment alignment = Qt::AlignCenter,
                   QWidget *parent = nullptr);
 };
@@ -30,22 +32,31 @@ class AnimatedLabel : public QLabel {
    Q_OBJECT
 
    public:
+   explicit AnimatedLabel(const QString &family = "Segoe UI",
+                        int pointSize = 8,
+                        QFont::Weight weight = QFont::Normal,
+                        bool italic = false,
+                        const QString &text = QString(),
+                        Qt::Alignment alignment = Qt::AlignCenter,
+                        QWidget *parent = nullptr);
+
    explicit AnimatedLabel(bool isIconic = false,
-                  const QString &family = "Segoe UI",
-                  int pointSize = 8,
-                  QFont::Weight weight = QFont::Normal,
-                  bool italic = false,
-                  const QString &text = " ",
-                  Qt::Alignment alignment = Qt::AlignCenter,
-                  QWidget *parent = nullptr);
+                        const QString &family = "Segoe UI",
+                        int pointSize = 8,
+                        QFont::Weight weight = QFont::Normal,
+                        bool italic = false,
+                        const QString &text = " ",
+                        Qt::Alignment alignment = Qt::AlignCenter,
+                        QWidget *parent = nullptr);
 
    void setAnimatedText(const QString &text);
 
-   protected:
    void show();
    void hide();
 
    private:
+   void init();
+
    SmoothOpacity *effect = nullptr;
    QPropertyAnimation *fadeIn = nullptr;
    QPropertyAnimation *fadeOut = nullptr;

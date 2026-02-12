@@ -105,9 +105,9 @@ void LineProgress::paintEvent(QPaintEvent *event) {
          int overflow = (xBar + wBar) - (trackW + margin);
          painter.drawRoundedRect(QRect(xBar, 0, wBar - overflow, lineHeight), radius, radius);
          painter.drawRoundedRect(QRect(margin, 0, overflow, lineHeight), radius, radius);
-      } else {
+      } else 
          painter.drawRoundedRect(QRect(xBar, 0, wBar, lineHeight), radius, radius);
-      }
+      
    } else {
       int barWidth = int(currentValue * trackW);
       QRect barRec(margin,0, barWidth, lineHeight);
@@ -115,7 +115,7 @@ void LineProgress::paintEvent(QPaintEvent *event) {
    }
 
    QFont font;
-   font.setPointSize(11);
+   font.setPointSize(10);
    font.setFamily("Segoe UI");
    font.setWeight(QFont::Normal);
    painter.setFont(font);

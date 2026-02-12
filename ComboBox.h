@@ -7,6 +7,8 @@
 #include "RoundedBox.h"
 #include "ScrollBar.h"
 #include "Delegate.h"
+#include "Popup.h"
+#include "resources/IconManager.h"
 
 #include <QObject>
 #include <QEvent>
@@ -22,6 +24,7 @@
 #include <QVBoxLayout>
 #include <QFrame>
 #include <QStringList>
+#include <QVector>
 
 class ComboBox : public TextField {
     Q_OBJECT
@@ -29,27 +32,30 @@ class ComboBox : public TextField {
     public:
     explicit ComboBox(QWidget *parent = nullptr);
 
+    struct ComboItem { QString text; QString lightIcon = ""; QString darkIcon = ""; };
+
     void setIconic(bool value);
     void setEditable(bool value);
     void setDarkMode(bool value);
     void setCurrentItem(int index);
-    void setFixedSize(const QSize &s);
-    void setPlaceholderText(const QString &text);
+    void setFieldSize(const QSize &fieldSize);
+    void setPopupWidth(int width);
 
-    void addItems(QStringList items);
-    void addIcons(QStringList Light = {}, QStringList dark = {});
+    void addItem(const QString &text, const QString &lightIcon = "", const QString &darkIcon = "");
+    void addItems(const QVector<ComboItem> comboItems);
 
     void deleteItem(int index);
     void clearAll();
 
-    QString currentText();
-    int currentIndex();
+    QString currentText() const;
+    int currentIndex() const;
 
     void setMaxVisibleItems(int items);
-    int getMaxVisibleItems();
+    int maxVisibleItems() const;
 
-    void fadeInAnimation();
-    void fadeOutAnimation();
+    private slots:
+    void onDropDownButtonClicked();
+    void onComboItemClicked(const QModelIndex &index);
 
     protected:
     void mousePressEvent(QMouseEvent *event) override;
@@ -58,14 +64,16 @@ class ComboBox : public TextField {
     void contextMenuEvent(QContextMenuEvent *event) override;
     void mouseDoubleClickEvent(QMouseEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
+    bool eventFilter(QObject *obj, QEvent *event);
 
     private:
+    QVector<ComboItem> items;
+
+    void init();
     void positionDropDownButton();
-    void setupPopup();
-    void popupPositioning();
-    void updatePopupListHeight();
-    void setDropDownButton();  
-    void updateModel();
+    void positionPopup();
+    void updateItemIcons();
+    void setDropDownButton();
 
     // Flags
     bool isEditable = false;
@@ -73,35 +81,19 @@ class ComboBox : public TextField {
     bool isDarkMode = false;
 
     // Max Visible Items
-    int maxVisibleItems = 0;
+    int _maxVisibleItems = 0;
   
     // Dropdown Button
     Button *dropdown = nullptr;
-    const QString arrowDown = ":/icons/arrow-down.svg";
+    const QString ArrowDown = IconManager::icon(Icons::ArrowDown);
 
     // Rounded Popup
-    RoundedBox *popup = nullptr;
+    Popup *popup = nullptr;
 
     // List & Delegate for data items inside Popup
-    QListView *list = nullptr;
-    Delegate *d = nullptr;
+    Delegate *delegate = nullptr;
     QStandardItemModel model;
-    QVBoxLayout *layout = nullptr;
-
-    // List for items, icon paths
-    QStringList _items;
-    QStringList itemsIconsLight;
-    QStringList itemsIconsDark;
 
     // Auto Completer
     QCompleter *completer = nullptr;
-
-    // Animation & Effects
-    SmoothOpacity *smooth_opacity = nullptr;
-    QPropertyAnimation *animation = nullptr;
-
-    // Scrollbars of Popup
-    ScrollBar *vScroll = nullptr;
-    ScrollBar *hScroll = nullptr;
 };
-

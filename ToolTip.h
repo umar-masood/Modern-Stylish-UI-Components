@@ -14,23 +14,27 @@ class ToolTip : public QObject {
   Q_OBJECT
   
   public:
-  explicit ToolTip(QWidget *target = nullptr, const QString &text = "", bool isDarkMode = false, QObject *parent = nullptr);
+  explicit ToolTip(QWidget *target = nullptr, const QString &text = "", QObject *parent = nullptr);
   void setText(const QString &text);
-  void setDarkMode(bool isDarkMode);
+  void setDarkMode(bool enable);
   void setTargetWidget(QWidget *target);
   void hide();
 
-  private:
+  protected:
   bool eventFilter(QObject *obj, QEvent *event) override;
+
+  private:
   void position(QWidget *target);
   void showToolTip();
   void fadeInAnimation();
   void fadeOutAnimation();
 
-  QTimer timer;
-  QWidget *target = nullptr;
-  RoundedBox *tooltipWidget = nullptr;
+  bool isDarkMode = false;
   bool isHovering = false;
+
+  QTimer timer;
+  QWidget *_target = nullptr;
+  RoundedBox *tooltipWidget = nullptr;
   QPropertyAnimation *animation = nullptr;
 
   signals:
@@ -42,3 +46,4 @@ class ToolTip : public QObject {
   void onThemeModeChanged(bool enable);
   void onTimeout();
 };
+

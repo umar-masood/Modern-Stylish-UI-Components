@@ -232,6 +232,7 @@ void Toggle::mouseReleaseEvent(QMouseEvent *event) {
         animation2->setEndValue(isToggled ? 1.0 : 0.0);
         animation2->start();
       }
+      
       event->accept();
       return;
     } else {

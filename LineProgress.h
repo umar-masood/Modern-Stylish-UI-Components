@@ -45,9 +45,9 @@ class LineProgress : public QWidget {
    double minimum = 0.0;
    double maximum = 1.0;
 
-   static constexpr int margin = 12;
-   static constexpr int lineHeight = 8;
-   static constexpr int radius = lineHeight / 2;
+   const int margin = 12;
+   const int lineHeight = 8;
+   const int radius = lineHeight / 2;
 
    QTimer *timer = nullptr;   
    QPropertyAnimation *animation = nullptr;

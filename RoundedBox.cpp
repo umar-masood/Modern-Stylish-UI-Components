@@ -1,18 +1,16 @@
 #include "RoundedBox.h"
 
-RoundedBox::RoundedBox(const QString &txt, QWidget *parent, bool isToolTip) : QWidget(nullptr), isDarkMode(false), text(txt), _isToolTip(isToolTip) {
-    Qt::WindowFlags flags = Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint;
-
+RoundedBox::RoundedBox(bool isToolTip, QWidget *parent) : QWidget(nullptr), isDarkMode(false), _isToolTip(isToolTip) {
     if (isToolTip) {
-        flags |= Qt::ToolTip;           
+        setWindowFlags( Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint | Qt::ToolTip);
         setAttribute(Qt::WA_ShowWithoutActivating);
         setFocusPolicy(Qt::NoFocus);
-    } else {
-        flags |= Qt::WindowStaysOnTopHint;
-        flags |= Qt::Tool;   
-    }
+        setAttribute(Qt::WA_TranslucentBackground);
+    } 
+}
 
-    setWindowFlags(flags);
+RoundedBox::RoundedBox(QWidget *parent) : QWidget(parent) {
+    setWindowFlags(Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint | Qt::WindowStaysOnTopHint | Qt::Tool);
     setAttribute(Qt::WA_TranslucentBackground);
 }
 
@@ -27,7 +25,7 @@ void RoundedBox::setAsToolTip(bool value) {
 }
 
 void RoundedBox::setText(const QString &text) {
-    this->text = text;
+    _text = text;
     update();
 }
 
@@ -40,7 +38,7 @@ QSize RoundedBox::sizeHint() const {
 
     QFontMetrics fm(font);
     int MAX_W = 400;
-    QSize s = fm.boundingRect(0, 0, MAX_W, 0, Qt::TextWordWrap, text).size();
+    QSize s = fm.boundingRect(0, 0, MAX_W, 0, Qt::TextWordWrap, _text).size();
     return QSize(s.width() + 24, s.height() + 12);
 }
 
@@ -48,18 +46,19 @@ void RoundedBox::paintEvent(QPaintEvent *event) {
     Q_UNUSED(event);
 
     // Colors
-    QColor BG = isDarkMode ? QColor("#1F1F1F") : QColor("#FFFFFF");
+    QColor BG = isDarkMode ? QColor("#242424") : QColor("#FFFFFF");
     QColor BR = "#AFAFAF";
 
     QPainter painter(this);
     painter.setRenderHints(QPainter::Antialiasing);
     painter.setBrush(BG);
+
     QPen pen(BR);
     pen.setWidthF(0.2);
     painter.setPen(pen);
 
     QPainterPath path;
-    path.addRoundedRect(rect().adjusted(1, 1, -1, -1), 6, 6);
+    path.addRoundedRect(rect().adjusted(2, 2, -2, -2), 6, 6);
     painter.drawPath(path);
 
     // Text
@@ -70,8 +69,6 @@ void RoundedBox::paintEvent(QPaintEvent *event) {
         painter.setFont(font);
         painter.setPen(isDarkMode ? QColor("#F0F0F0") : QColor("#000000"));
         QRect text_area(12, 0, width() - 24, height());
-        painter.drawText(text_area, Qt::AlignLeft | Qt::AlignVCenter | Qt::TextWordWrap, text);
+        painter.drawText(text_area, Qt::AlignLeft | Qt::AlignVCenter | Qt::TextWordWrap, _text);
     }
 }
-
-

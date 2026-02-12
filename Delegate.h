@@ -15,6 +15,8 @@
 #include <QRect>
 #include <QString>
 
+#include "resources/IconManager.h"
+
 class Delegate : public QStyledItemDelegate {
     Q_OBJECT
 
@@ -25,15 +27,20 @@ class Delegate : public QStyledItemDelegate {
     void setAsMenu(bool value);
     void setDelegateSize(QSize size);
     void setHoveredIndex(const QModelIndex &index);
+    void setSelectionDotIndicator(bool enable);
+    void setSelectionCheckIndicator(bool enable);
+    void setActiveIndex(const QModelIndex &index);
 
     QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const override;
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 
     private:
     QSize m_itemSize;
-    QModelIndex hoveredIndex;
+    QModelIndex hoveredIndex, activeIndex;
 
     bool isDarkMode = false;
     bool isIconic = false;
     bool isMenu = true;
+    bool hasDotIndicator = false;
+    bool hasCheckIndicator = false;
 };

@@ -1,54 +1,69 @@
 #include "Label.h"
 
-/* Custom Text Label (With and Without Icon)*/
+/* --------------- Custom Text Label (With and Without Icon) ------------------ */
 Label::Label(bool isIconic, 
-            const QString &family, 
+            Qt::Alignment alignment, 
+            QWidget *parent) : QLabel(parent) 
+{
+   setAttribute(Qt::WA_TranslucentBackground);
+   setAlignment(alignment);
+}
+
+Label::Label(const QString &family, 
             int pointSize, 
             QFont::Weight weight, 
             bool italic, 
             const QString &text, 
             Qt::Alignment alignment, 
-            QWidget *parent) : QLabel(parent) {
-
+            QWidget *parent) : QLabel(parent) 
+{
    setAttribute(Qt::WA_TranslucentBackground);
    setAlignment(alignment);
+   setText(text);
 
-   // If not iconic, set the font and text
-   if (!isIconic) {
-      setText(text);
-
-      QFont fnt;
-      fnt.setPointSize(pointSize);
-      fnt.setFamily(family);
-      fnt.setWeight(weight);
-      fnt.setItalic(italic);
-      setFont(fnt);
-   }
+   QFont fnt;
+   fnt.setPointSize(pointSize);
+   fnt.setFamily(family);
+   fnt.setWeight(weight);
+   fnt.setItalic(italic);
+   setFont(fnt);
 }
 
 AnimatedLabel::AnimatedLabel(bool isIconic, 
-            const QString &family, 
-            int pointSize, 
-            QFont::Weight weight, 
-            bool italic, 
-            const QString &text, 
-            Qt::Alignment alignment, 
-            QWidget *parent) : QLabel(parent) {
+                           const QString &family, 
+                           int pointSize, 
+                           QFont::Weight weight, 
+                           bool italic, 
+                           const QString &text, 
+                           Qt::Alignment alignment, 
+                           QWidget *parent) : QLabel(parent) 
+{
+   setAttribute(Qt::WA_TranslucentBackground);
+   setAlignment(alignment);
+   init();
+}
 
+AnimatedLabel::AnimatedLabel(const QString &family, 
+                           int pointSize, 
+                           QFont::Weight weight, 
+                           bool italic, 
+                           const QString &text, 
+                           Qt::Alignment alignment, 
+                           QWidget *parent) : QLabel(parent) 
+{
    setAttribute(Qt::WA_TranslucentBackground);
    setAlignment(alignment);
 
-   // If not iconic, set the font and text
-   if (!isIconic) {
-      QFont fnt;
-      fnt.setPointSize(pointSize);
-      fnt.setFamily(family);
-      fnt.setWeight(weight);
-      fnt.setItalic(italic);
-      setFont(fnt); 
-      setText(text);
-   }
+   QFont fnt;
+   fnt.setPointSize(pointSize);
+   fnt.setFamily(family);
+   fnt.setWeight(weight);
+   fnt.setItalic(italic);
+   setFont(fnt); 
+   setText(text);
+}
 
+void AnimatedLabel::init() {
    // Opacity effect
    effect = new SmoothOpacity(this);
    effect->setOpacity(0.0);
@@ -73,7 +88,6 @@ AnimatedLabel::AnimatedLabel(bool isIconic,
       setGraphicsEffect(nullptr);
       effect->setOpacity(1.0);
    });
-
 }
 
 void AnimatedLabel::show() {

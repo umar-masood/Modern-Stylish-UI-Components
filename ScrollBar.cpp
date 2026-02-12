@@ -52,11 +52,11 @@ void ScrollBar::paintEvent(QPaintEvent *event) {
   QRect area = rect();
   int areaWidth, areaHeight, radius = 4;
   if (orientation() == Qt::Vertical) {
-    areaWidth = isHover ? 8 : 0;
+    areaWidth = isHover ? 6 : 0;
     areaHeight = area.height();
   } else {
     areaWidth = area.width();
-    areaHeight = isHover ? 8 : 0;
+    areaHeight = isHover ? 6 : 0;
   }
 
   painter.setPen(Qt::NoPen);
@@ -64,8 +64,8 @@ void ScrollBar::paintEvent(QPaintEvent *event) {
   painter.setOpacity(opacity);
   painter.drawRoundedRect(QRect(area.x() + 2, area.y(), areaWidth, areaHeight), radius, radius);
 
-  QColor light_handle = QColor("#8A8A8A");
-  QColor dark_handle = QColor("#9F9F9F");
+  QColor light_handle = QColor("#CCCCCC");
+  QColor dark_handle = QColor("#707070");
 
   QColor currentColorHandle = isDarkMode ? dark_handle : light_handle;
 
@@ -106,7 +106,7 @@ void ScrollBar::enterEvent(QEnterEvent *event) {
 
   animation2->stop();
   animation2->setStartValue(handle);
-  animation2->setEndValue(8.0);
+  animation2->setEndValue(6.0);
   animation2->start();
 
   QScrollBar::enterEvent(event);

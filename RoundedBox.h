@@ -15,7 +15,8 @@ class RoundedBox : public QWidget {
     Q_OBJECT
 
     public:
-    explicit RoundedBox(const QString &txt = "", QWidget *parent = nullptr, bool isToolTip = false);
+    explicit RoundedBox(bool isToolTip = false, QWidget *parent = nullptr);
+    explicit RoundedBox(QWidget *parent = nullptr);
     virtual ~RoundedBox() = default;
 
     void setDarkMode(bool value);
@@ -31,5 +32,5 @@ class RoundedBox : public QWidget {
 
     bool isDarkMode;
     bool _isToolTip;
-    QString text;
+    QString _text;
 };

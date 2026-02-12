@@ -23,10 +23,10 @@ void Overlay::paintEvent(QPaintEvent *event) {
    painter.drawPath(path);
 }
 
-Dialog::Dialog(QWidget *centralWidget, QWidget *parent, bool closeBtn) : SubWindow(centralWidget->size(), parent, closeBtn, false), contentWidget(centralWidget) {
+Dialog::Dialog(QWidget *centralWidget, QWidget *parent, bool hasCloseButton) : SubWindow(centralWidget->size(), parent, hasCloseButton, false), contentWidget(centralWidget) {
    setWindowFlags(Qt::Dialog | Qt::WindowStaysOnTopHint);
-   setFocusPolicy(Qt::StrongFocus);
    setWindowModality(Qt::WindowModal);
+   setFocusPolicy(Qt::StrongFocus);
 
    if (parent) {
       overlay = new Overlay(parent);
@@ -37,7 +37,9 @@ Dialog::Dialog(QWidget *centralWidget, QWidget *parent, bool closeBtn) : SubWind
 }
 
 void Dialog::setDarkMode(bool value) {
-   if (isDarkMode == value) return;
+   if (isDarkMode == value) 
+      return;
+   
    isDarkMode = value;
    SubWindow::setDarkMode(isDarkMode);
 }
@@ -97,4 +99,3 @@ void Dialog::setup() {
    if (contentWidget)
       layout->addWidget(contentWidget, 0, Qt::AlignCenter);
 }
-
