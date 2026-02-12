@@ -1,6 +1,6 @@
 🌟 QtNovaUI - UI Library for Windows & MacOS (Supported Cross-Platform)
 =====================================================
-Crafted with Qt, C++ , QSS — Art Meets Function. This collection of custom UI components redefines desktop application design in Qt. Every element has been hand-built with precision using C++ and Qt, and styled with the elegance of Qt Style Sheets (QSS) to evoke a modern, smooth, and responsive feel.
+Crafted with Qt, C++  — Art Meets Function. This collection of custom UI components redefines desktop application design in Qt. Every element has been hand-built with precision using C++ and Qt, and styled with the elegance of Qt Style Sheets (QSS) to evoke a modern, smooth, and responsive feel.
 
 🧩 Core Components
 ===================
@@ -12,6 +12,7 @@ Crafted with Qt, C++ , QSS — Art Meets Function. This collection of custom UI 
 - Animated shadow on hover
 - Dark mode support
 - Primary / Secondary styles
+- Customizable buttn background and text colors
 - Gradient backgrounds with hover animation
 - Unicode & Pixmap icon support
 - Built-in loader (spinner)
@@ -81,16 +82,14 @@ Disabled automatically for Secondary buttons.
 
 ### Gradient Button
 ```cpp
-btn->setGradientColor(true, "#008EDE", "#1BB3E6");
-btn->setHoverGradientColor("#3FC1FF");
+btn->setGradientColors("#008EDE", "#1BB3E6", "#3FC1FF");
 ```
 > [!IMPORTANT]
-> Gradient is disabled automatically in Hyperlink mode.
+> Currently, this button only supports linear gradient with two color stops. Gradient is disabled automatically in Hyperlink mode.
 
 ### HyperLink Button
 ```cpp
 btn->setHyperLink(true);
-btn->setHyperLinkColors(QColor("#008EDE"), QColor("#1BB3E6"));
 ```
 - Text-only rendering
 - No background or border
@@ -106,15 +105,15 @@ btn->setText("");
 - Spinner is centered automatically
 - Text restores when non-empty
 
-> [!WARNING]
-> Loader will not appear unless setText("") is used.
+> [!IMPORTANT]
+> Loader will not appear unless `setText("")` is called with empty string.
 
 ### Font Customization
 ```cpp
 btn->setFontProperties(
   "Segoe UI",
   10,
-  true,   // bold
+  QFont::Medium,   // font weight
   false   // italic
 );
 ```
@@ -128,8 +127,6 @@ btn->setFontProperties(
 > `setSecondary()`
 > `setHyperLink()`
 > `setLoaderButton()`
-> `setGradientColor()`
-
 
 # 📥 ComboBox
 
