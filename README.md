@@ -125,6 +125,40 @@ btn->setFontProperties(
   false   // italic
 );
 ```
+
+### Button Colors Customization
+#### Background Colors
+```cpp
+btn->setColor(ButtonStateColor::PrimaryNormal, QColor("#FFFFFF"));
+```
+The following are the available button states for background coloring:
+- `PrimaryNormal` – Default primary button background  
+- `PrimaryHover` – Background when mouse hovers over primary button  
+- `PrimaryPressed` – Background when primary button is pressed  
+- `DisabledPrimary` – Background when primary button is disabled  
+- `SecondaryNormalLight` – Default secondary background in light mode  
+- `SecondaryHoverLight` – Hover background in light mode  
+- `SecondaryPressedLight` – Pressed background in light mode  
+- `DisabledSecondaryLight` – Disabled secondary background in light mode
+- `SecondaryNormalDark` – Default secondary background in dark mode  
+- `SecondaryHoverDark` – Hover background in dark mode  
+- `SecondaryPressedDark` – Pressed background in dark mode  
+- `DisabledSecondaryDark` – Disabled secondary background in dark mode
+- `HyperLinkNormal` – Default hyperlink-style background  
+- `HyperLinkHover` – Hover state for hyperlink-style button  
+
+#### Text Colors
+```cpp
+btn->setTextColor(ButtonTextColor::SecondaryTextLight, QColor("#000000"));
+```
+The following are the available button states for text coloring:
+- `PrimaryText` – Default text color for primary button  
+- `DisabledPrimaryText` – Text color when primary button is disabled  
+- `SecondaryTextLight` – Default secondary text color in light mode  
+- `DisabledSecondaryTextLight` – Text color when secondary button is disabled in light mode  
+- `SecondaryTextDark` – Default secondary text color in dark mode  
+- `DisabledSecondaryTextDark` – Text color when secondary button is disabled in dark mode  
+
 > [!NOTE]
 > Unicode icons always use Segoe Fluent Icons, regardless of font settings.
 
