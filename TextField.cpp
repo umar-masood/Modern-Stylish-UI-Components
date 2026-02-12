@@ -2,10 +2,10 @@
 
 TextField::TextField(const QString &text, QWidget *parent) : QLineEdit(text, parent) { init(); }
 TextField::TextField(QWidget *parent) : QLineEdit(parent) { init(); }
-void TextField::setShadow(bool value) { hasShadow = value; }
 
-void TextField::setDarkMode(bool value) {
-    isDarkMode = value;
+void TextField::setShadow(bool enable) { hasShadow = enable; }
+void TextField::setDarkMode(bool enable) {
+    isDarkMode = enable;
 
     if (clear) 
         clear->setDarkMode(isDarkMode); 
@@ -24,12 +24,12 @@ void TextField::setFixedSize(QSize s) {
 }
 
 
-void TextField::setTextFieldIcon(bool value) {
-    hasTextFieldIcon = value;
+void TextField::setIconic(bool enable) {
+    hasTextFieldIcon = enable;
     updateStyle();
 }
 
-void TextField::setTextFieldIconSize(QSize s) { if (hasTextFieldIcon) textFieldIconSize = s; }
+void TextField::setIconSize(QSize s) { if (hasTextFieldIcon) textFieldIconSize = s; }
 
 void TextField::setIconPaths(const QString &lightIcon, const QString &darkIcon) {
     if (hasTextFieldIcon) {
@@ -41,24 +41,24 @@ void TextField::setIconPaths(const QString &lightIcon, const QString &darkIcon) 
     }
 }
 
-void TextField::setReadOnly(bool value) {
-    isReadOnly = value;
-    QLineEdit::setReadOnly(value);
+void TextField::setReadOnly(bool enable) {
+    isReadOnly = enable;
+    QLineEdit::setReadOnly(isReadOnly);
 }
 
-void TextField::setEnabled(bool value) {
-    isEnabled = value;
-    QLineEdit::setEnabled(value);
+void TextField::setEnabled(bool enable) {
+    isEnabled = enable;
+    QLineEdit::setEnabled(isEnabled);
 }
 
-void TextField::setContextMenu(bool value) { hasContextMenu = value; }
+void TextField::setContextMenu(bool enable) { hasContextMenu = enable; }
 void TextField::setFontProperties(const QString &family, int pointSize, bool bold, bool italic) {
     isItalic = italic; isBold = bold; fontSize = pointSize; fontFamily = family;
     updateStyle(); 
 }
 
-void TextField::setClearButton(bool value) {
-    hasClearButton = value;
+void TextField::setClearButton(bool enable) {
+    hasClearButton = enable;
 
     if (hasClearButton && !clear) {
         clear = new Button(this);
@@ -87,8 +87,8 @@ void TextField::setClearButton(bool value) {
     }
 }
 
-void TextField::setPasswordTextField(bool value) {
-    hasPasswordButton = value;
+void TextField::setPasswordMode(bool enable) {
+    hasPasswordButton = enable;
 
     if (hasPasswordButton && !password && !hasClearButton) {
         password = new Button(this);
@@ -141,11 +141,6 @@ void TextField::setPadding(int left, int top, int right, int bottom) {
     updateStyle();
 }
 
-void TextField::setTextSelectedBackgroundColor(const QString &hex) { _selected_text_background_color = hex; updateStyle(); }
-void TextField::setTextSelectionColor(const QString &hex) { _selected_text_color = hex; updateStyle(); }
-void TextField::setTextColor(const QString &hex) { _text_color = hex; updateStyle(); }
-void TextField::setPlaceHolderTextColor(const QString &hex) { _placeholder_text_color = hex; updateStyle(); }
-
 void TextField::resizeEvent(QResizeEvent *event) {
     QLineEdit::resizeEvent(event);
     positionButton(clear);
@@ -160,8 +155,21 @@ void TextField::positionButton(Button *button) {
     }
 }
 
-void TextField::setBorderTransparent(bool value) { isBorderTransparent = value; }
-void TextField::setNormalBackgroundTransparent(bool value) { isBackgroundTransparent = value; }
+QColor TextField::color(const TextFieldColor &state) const {  return _colors.value(state, Qt::transparent); }
+QColor TextField::textColor(const TextFieldTextColor &state) const { return _textColors.value(state, QColor("#000000")); }
+
+void TextField::setColor(const TextFieldColor &state, const QColor &color) {
+    _colors.insert(state, color);
+    updateStyle();
+}
+
+void TextField::setTextColor(const TextFieldTextColor &state, const QColor &color) {
+    _textColors.insert(state, color);
+    updateStyle();
+}
+
+void TextField::setBorderTransparent(bool enable) { isBorderTransparent = enable; }
+void TextField::setNormalBackgroundTransparent(bool enable) { isBackgroundTransparent = enable; }
 
 void TextField::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
@@ -169,50 +177,51 @@ void TextField::paintEvent(QPaintEvent *event) {
 
     QRect rec = rect().adjusted(1, 1, -1, -1);
 
-    QPen pen;
-    pen.setWidthF(isFocused ? 1.0 : 0.5);
+    // Determine border color
+    QColor penColor = isFocused ? color(TextFieldColor::BorderFocused)
+                                    : (isDarkMode ? color(TextFieldColor::BorderDark)
+                                                  : color(TextFieldColor::BorderLight));
+    if (isBorderTransparent) penColor = Qt::transparent;
 
-    QColor border_color;
-    if (isBorderTransparent) 
-        border_color = Qt::transparent;
-    else
-        border_color = isFocused ? QColor("#0191DF") : (isDarkMode ? QColor("#4D4D4D") : QColor("#CCCCCC"));
-
-    pen.setColor(border_color);
-    pen.setStyle(Qt::SolidLine);
+    QPen pen(penColor, isFocused ? 1.0 : 0.5);
     pen.setJoinStyle(Qt::RoundJoin);
     painter.setPen(pen);
 
-    QColor bg_color;
-
-    if (isFocused)
-        bg_color = isDarkMode ? QColor("#242424") : QColor("#FFFFFF");
+    // Determine background color
+    QColor brushColor;
+    if (isBackgroundTransparent)
+        brushColor = Qt::transparent;
+    else if (isFocused)
+        brushColor = isDarkMode ? color(TextFieldColor::FocusedDark)
+                                : color(TextFieldColor::FocusedLight);
     else if (isHover)
-        bg_color = isDarkMode ? QColor("#323232") : QColor("#F0F0F0");
-    else if (isBackgroundTransparent)
-        bg_color = Qt::transparent;
+        brushColor = isDarkMode ? color(TextFieldColor::HoverDark)
+                                : color(TextFieldColor::HoverLight);
     else
-        bg_color = isDarkMode ? QColor("#2D2D2D") : QColor("#FBFBFB");
+        brushColor = isDarkMode ? color(TextFieldColor::NormalDark)
+                                : color(TextFieldColor::NormalLight);
+    
+    painter.setBrush(brushColor);
 
-    painter.setBrush(bg_color);
-
+    // Draw rounded rect
     QPainterPath path;
     path.addRoundedRect(rec, 6, 6);
     painter.drawPath(path);
 
+    // Draw left icon if present
     if (hasTextFieldIcon) {
         QString iconPath = isDarkMode ? dark_icon : light_icon;
         if (!iconPath.isEmpty()) {
-            QPixmap pixmap(iconPath);
-            pixmap = pixmap.scaled(textFieldIconSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-            if (!pixmap.isNull()) {
-                int yPos = (rect().height() - pixmap.height()) / 2;
+            QPixmap icon = IconManager::renderSvg(iconPath, textFieldIconSize);
+            if (!icon.isNull()) {
+                int yPos = (rect().height() - icon.height()) / 2;
                 int xPos = 12;
-                painter.drawPixmap(xPos, yPos, pixmap);
+                painter.drawPixmap(xPos, yPos, icon);
             }
         }
     }
 
+    // Call base QLineEdit paintEvent to draw text
     QLineEdit::paintEvent(event);
 }
 
@@ -224,8 +233,8 @@ void TextField::keyPressEvent(QKeyEvent *event) {
             case Qt::Key_X:
             case Qt::Key_A:
                 return;
-            default:
-                break;
+
+            default: break;
         }
     }
 
@@ -320,6 +329,7 @@ void TextField::init() {
     setFixedSize(QSize(0, 0));
     setFocusPolicy(Qt::ClickFocus);
     updateStyle();
+    loadDefaultColors();
     
     effect = new SmoothShadow(this);
     effect->setOffset(0, 0);
@@ -332,6 +342,28 @@ void TextField::init() {
     animate = new QPropertyAnimation(effect, "blurRadius", this);
     animate->setDuration(300);
     animate->setEasingCurve(QEasingCurve::InOutQuad);
+}
+
+void TextField::loadDefaultColors() {
+    // Border colors
+    _colors[TextFieldColor::BorderFocused] = QColor("#0191DF");      // focused border
+    _colors[TextFieldColor::BorderLight]   = QColor("#CCCCCC");      // light mode normal border
+    _colors[TextFieldColor::BorderDark]    = QColor("#4D4D4D");      // dark mode normal border
+
+    // Background colors
+    _colors[TextFieldColor::FocusedLight]  = QColor("#FFFFFF");      // focused background light
+    _colors[TextFieldColor::FocusedDark]   = QColor("#242424");      // focused background dark
+    _colors[TextFieldColor::HoverLight]    = QColor("#F0F0F0");      // hover background light
+    _colors[TextFieldColor::HoverDark]     = QColor("#323232");      // hover background dark
+    _colors[TextFieldColor::NormalLight]   = QColor("#FBFBFB");      // normal background light
+    _colors[TextFieldColor::NormalDark]    = QColor("#2D2D2D");      // normal background dark
+
+    // Text colors
+    _textColors[TextFieldTextColor::NormalTxtLight]         = QColor("#000000"); // normal text light mode
+    _textColors[TextFieldTextColor::NormalTxtDark]          = QColor("#FFFFFF");  // normal text dark mode
+    _textColors[TextFieldTextColor::SelectedTxt]            = QColor("#FFFFFF");  // selected text
+    _textColors[TextFieldTextColor::PlaceHolderTxt]         = QColor("#ACABAB");  // placeholder text
+    _textColors[TextFieldTextColor::SelectionBackgroundTxt] = QColor("#32CCFE");  // selection background
 }
 
 void TextField::updateStyle() {
@@ -358,10 +390,10 @@ void TextField::updateStyle() {
         .arg(fontSize)
         .arg(isBold ? "bold" : "normal")
         .arg(isItalic ? "italic" : "normal")
-        .arg(!_text_color.isEmpty() ? _text_color : (isDarkMode ? "#FFFFFF" : "#000000"))
-        .arg(!_selected_text_background_color.isEmpty() ? _selected_text_background_color : "#32CCFE")
-        .arg(!_selected_text_color.isEmpty() ? _selected_text_color : "#FFFFFF")
-        .arg(!_placeholder_text_color.isEmpty() ? _placeholder_text_color : (isDarkMode ? "#757575" : "#ACABAB"))
+        .arg(textColor(isDarkMode ? NormalTxtDark : NormalTxtLight).name())             
+        .arg(textColor(SelectionBackgroundTxt).name())
+        .arg(textColor(SelectedTxt).name())        
+        .arg(textColor(PlaceHolderTxt).name())      
         .arg(_left != 0 ? _left : (hasTextFieldIcon ? (12 + 20 + 12) - 3 : 12))
         .arg(_right != 0 ? _right : ((hasClearButton || hasPasswordButton) ? (24 + 28) - 9 : 12))
         .arg(_bottom != 0 ? _bottom : 2)

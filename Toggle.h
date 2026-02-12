@@ -19,10 +19,36 @@ class Toggle : public QPushButton {
   Q_PROPERTY(int KW READ getKW WRITE setKW)
 
   public:
+  enum ToggleColor {
+    NormalLight,
+    NormalDark,
+
+    HoverLight,
+    HoverDark,
+
+    ToggledNormal,
+    ToggledHover,
+
+    BorderLight,
+    BorderDark,
+    BorderToggled,
+
+    NormalKnobLight,
+    NormalKnobDark,
+
+    ToggledKnobLight,
+    ToggledKnobDark,
+  };
+
   explicit Toggle(QWidget *parent = nullptr);
 
+  void setColor(const ToggleColor &state, const QColor &color);
   void setShadow(bool value);
   void setDarkMode(bool value);
+
+  inline uint qHash(const ToggleColor &state, uint seed = 0) {
+    return ::qHash(static_cast<int>(state), seed);
+  }
 
   protected:
   void paintEvent(QPaintEvent *event) override;
@@ -34,7 +60,9 @@ class Toggle : public QPushButton {
 
   private:
   void init();
-
+  void loadDefaultColors();
+  QColor color(const ToggleColor &state) const;
+  
   qreal getScale();
   void setScale(qreal value);
 
@@ -64,4 +92,7 @@ class Toggle : public QPushButton {
   bool isDragging = false;
   qreal dragOffset = 0.0;
   int dragStartX = 0;
+
+  // Colors
+  QHash<ToggleColor, QColor> _colors;
 };

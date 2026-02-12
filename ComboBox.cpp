@@ -68,7 +68,7 @@ void ComboBox::setPopupWidth(int width) { popup->setPopupWidth(width); }
 void ComboBox::setIconic(bool value) {
     isIconic = value;
     delegate->setIconic(isIconic);
-    setTextFieldIcon(isIconic);
+    TextField::setIconic(isIconic);
 }
 
 void ComboBox::setEditable(bool value) {

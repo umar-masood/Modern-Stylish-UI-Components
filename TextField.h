@@ -3,7 +3,7 @@
 #include "Button.h"
 #include "Menu.h"
 #include "SmoothShadow.h"
-#include "resources/IconManager.h"
+#include "../../resources/IconManager.h"
 
 #include <QResizeEvent>
 #include <QFocusEvent>
@@ -12,33 +12,59 @@
 #include <QDebug>
 #include <algorithm>
 #include <QLineEdit>
+#include <QHash>
 
 class TextField : public QLineEdit {
   Q_OBJECT
 
   public:
+  enum TextFieldTextColor {
+    NormalTxtLight,
+    NormalTxtDark,
+    SelectedTxt,
+    PlaceHolderTxt,
+    SelectionBackgroundTxt,
+  };
+
+  enum TextFieldColor {
+    BorderFocused,
+    BorderLight,
+    BorderDark,
+
+    FocusedLight,
+    FocusedDark,
+
+    HoverLight,
+    HoverDark,
+
+    NormalLight,
+    NormalDark,
+  };
+
   explicit TextField(const QString &text, QWidget *parent = nullptr);
   explicit TextField(QWidget *parent = nullptr);
-
-  void setShadow(bool value);
-  virtual void setDarkMode(bool value);
+  
+  void setShadow(bool enable);
+  virtual void setDarkMode(bool enable);
   void setFixedSize(QSize s);
-  void setTextFieldIcon(bool value);
-  void setTextFieldIconSize(QSize s);
-  void setIconPaths(const QString &lightIcon = "", const QString &darkIcon = "");
-  void setClearButton(bool value);
-  void setPasswordTextField(bool value);
+  void setIconic(bool enable);
+  void setIconSize(QSize s);
+  void setIconPaths(const QString &lightIcon = QString(), const QString &darkIcon = QString());
+  void setClearButton(bool enable);
+  void setPasswordMode(bool enable);
   void setPadding(int left = 0, int top = 0, int right = 0, int bottom = 0);
-  void setTextSelectedBackgroundColor(const QString &hex);
-  void setPlaceHolderTextColor(const QString &hex);
-  void setTextSelectionColor(const QString &hex);
-  void setTextColor(const QString &hex);
-  void setReadOnly(bool value);
-  void setEnabled(bool value);
+  void setReadOnly(bool enable);
+  void setEnabled(bool enable);
   void setFontProperties(const QString &family, int pointSize = 12, bool bold = false, bool italic = false);
-  void setContextMenu(bool value);
-  void setBorderTransparent(bool value);
-  void setNormalBackgroundTransparent(bool value);
+  void setContextMenu(bool enable);
+  void setBorderTransparent(bool enable);
+  void setNormalBackgroundTransparent(bool enable);
+  void setColor(const TextFieldColor &state, const QColor &color);
+  void setTextColor(const TextFieldTextColor &state, const QColor &color);
+
+  inline uint qHash(const TextFieldColor &state, uint seed = 0) {
+    return ::qHash(static_cast<int>(state), seed);
+  }
 
   protected:
   void paintEvent(QPaintEvent *event) override;
@@ -52,8 +78,12 @@ class TextField : public QLineEdit {
 
   private:
   void init();
+  void loadDefaultColors();
   void updateStyle();
   void positionButton(Button *button);
+
+  QColor color(const TextFieldColor &state) const;
+  QColor textColor(const TextFieldTextColor &state) const;
 
   // States
   bool isHover = false;
@@ -77,8 +107,11 @@ class TextField : public QLineEdit {
   // Padding
   int _left = 0, _right = 0, _top = 0, _bottom = 0;
 
+  // Border & BG Colors
+  QHash<TextFieldColor, QColor> _colors;
+
   // Text Colors
-  QString _selected_text_color, _selected_text_background_color, _text_color, _placeholder_text_color;
+  QHash<TextFieldTextColor, QColor> _textColors;
 
   // Icons
   const QString CopyIcon      =  IconManager::icon(Icons::Copy);

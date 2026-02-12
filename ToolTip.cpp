@@ -196,4 +196,3 @@ void ToolTip::hide() {
   if (tooltipWidget) 
     tooltipWidget->hide();
 }
-

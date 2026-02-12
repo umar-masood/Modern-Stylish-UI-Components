@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Button.h"
-#include "SubWindow.h" // Please use QtNovaFramelessSubWindow for this dailog
+#include "../windows/subWindow/SubWindow.h"
 
 #include <QScreen>
 #include <QCursor>

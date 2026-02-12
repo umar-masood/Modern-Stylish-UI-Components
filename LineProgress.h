@@ -11,13 +11,22 @@
 #include <QFont>
 #include <QtMath>
 #include <algorithm>
+#include <QHash>
 
 class LineProgress : public QWidget {
    Q_OBJECT
 
    public:
+   enum LineColor {
+      BackgroundLight,
+      BackgroundDark,
+      ForegroundLight,
+      ForegroundDark
+   };
+
    explicit LineProgress(QWidget *parent = nullptr);
-    
+
+   void setColor(const LineColor &state, const QColor &color);    
    void setFixedSize(QSize s);
    void setDarkMode(bool value);
    void setText(const QString &text);
@@ -29,13 +38,22 @@ class LineProgress : public QWidget {
    void setValue(int value);
    int getValue() const;
 
+   inline uint qHash(const LineColor &state, uint seed = 0) {
+      return ::qHash(static_cast<int>(state), seed);
+   }
+
    protected:
    void paintEvent(QPaintEvent *event) override;
 
    private: 
-   void fadeInAnimation();
-   void fadeOutAnimation();
-   
+   void fadeIn();
+   void fadeOut();
+   void loadDefaultColors();
+   QColor color(const LineColor &state) const;
+
+   // Colors
+   QHash<LineColor, QColor> _colors;
+
    bool isDarkMode = false;
    bool isIndeterminate = false;
 
@@ -51,7 +69,7 @@ class LineProgress : public QWidget {
 
    QTimer *timer = nullptr;   
    QPropertyAnimation *animation = nullptr;
-   SmoothOpacity *op = nullptr;
+   SmoothOpacity *opacity = nullptr;
 
    QString loaderText;
 };

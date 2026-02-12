@@ -15,6 +15,7 @@ void Toggle::init() {
   setFixedSize(38, 22);
   setFocusPolicy(Qt::NoFocus);
   setCheckable(true);
+  loadDefaultColors();
 
   connect(this, &QPushButton::toggled, this, [this](bool checked) {
     isToggled = checked;
@@ -90,59 +91,66 @@ void Toggle::setKW(int value) {
 
 int Toggle::getKW() { return KW; }
 
+QColor Toggle::color(const ToggleColor &state) const {  return _colors.value(state, Qt::transparent); }
+
+void Toggle::setColor(const ToggleColor &state, const QColor &color) {
+  _colors.insert(state, color);
+  update();
+}
+
+void Toggle::loadDefaultColors() {
+  // Background Colors
+  _colors[ToggleColor::NormalLight]   = QColor::fromString("#ECECEC");
+  _colors[ToggleColor::NormalDark]    = QColor::fromString("#202020");
+  _colors[ToggleColor::HoverLight]    = QColor::fromString("#E4E4E4");
+  _colors[ToggleColor::HoverDark]     = QColor::fromString("#2D2D2D");
+  _colors[ToggleColor::ToggledNormal] = QColor::fromString("#109AC7");
+  _colors[ToggleColor::ToggledHover]  = QColor::fromString("#1BB3E6");
+
+  // Border Colors
+  _colors[ToggleColor::BorderLight]   = QColor::fromString("#8A8A8A");
+  _colors[ToggleColor::BorderDark]    = QColor::fromString("#9F9F9F");
+  _colors[ToggleColor::BorderToggled] = QColor::fromString("#109AC7");
+
+  // Knob Colors
+  _colors[ToggleColor::NormalKnobLight]  = _colors[ToggleColor::BorderLight];
+  _colors[ToggleColor::NormalKnobDark]   = _colors[ToggleColor::BorderDark];
+  _colors[ToggleColor::ToggledKnobLight] = QColor::fromString("#FFFFFF");
+  _colors[ToggleColor::ToggledKnobDark]  = QColor::fromString("#000000");
+}
+
 void Toggle::paintEvent(QPaintEvent *event) {
   QPainter painter(this);
   painter.setRenderHints(QPainter::Antialiasing);
-
-  // Background Colors
-  QColor lightNormalBackground = QColor::fromString("#ECECEC");
-  QColor lightHoverBackground = QColor::fromString("#E4E4E4");
-
-  QColor darkNormalBackground = QColor::fromString("#202020");
-  QColor darkHoverBackground = QColor::fromString("#2D2D2D");
-
-  QColor toggledHoverBackground = QColor::fromString("#1BB3E6");
-  QColor toggledOnBackground = QColor::fromString("#109AC7");
-
-  // Border Colors
-  QColor lightBorder = QColor::fromString("#8A8A8A");
-  QColor darkBorder = QColor::fromString("#9F9F9F");
-
-  QColor toggedBorderColor = toggledOnBackground;
-
-  // Knob Colors
-  QColor lightNormalKnob = lightBorder;
-  QColor darkNormalKnob = darkBorder;
-
-  QColor lightToggledKnob = QColor::fromString("#FFFFFF");
-  QColor darkToggledKnob = QColor::fromString("#000000");
-
-  // Current Colors
-  QColor BG;
-  if (isHover) { if (isToggled)  BG = toggledHoverBackground;  else  BG = isDarkMode ? darkHoverBackground : lightHoverBackground; }
-  else if (isToggled) { BG = toggledOnBackground; } 
-  else { BG = isDarkMode ? darkNormalBackground : lightNormalBackground; }
-
-  QColor BORDER;
-  if (isToggled)  BORDER = toggedBorderColor;  else  BORDER = isDarkMode ? darkBorder : lightBorder;
   
-  QColor KBG;
-  if (isToggled) 
-    KBG = isDarkMode ? darkToggledKnob : lightToggledKnob;
+  // Background
+  QColor brushColor;
+  if (isHover) 
+    brushColor = isToggled ? color(ToggleColor::ToggledHover) 
+                   : (isDarkMode ? color(ToggleColor::HoverDark) : color(ToggleColor::HoverLight));
+  else if (isToggled) 
+    brushColor = color(ToggleColor::ToggledNormal);
   else 
-    KBG = isDarkMode ? darkNormalKnob : lightNormalKnob;
-  
+    brushColor = isDarkMode ? color(ToggleColor::NormalDark) : color(ToggleColor::NormalLight);
+
+  // Border
+  QColor penColor = isToggled ? color(ToggleColor::BorderToggled)
+                            : (isDarkMode ? color(ToggleColor::BorderDark) : color(ToggleColor::BorderLight));
+
+  // Knob
+  QColor knobBrushColor = isToggled ? (isDarkMode ? color(ToggleColor::ToggledKnobDark) : color(ToggleColor::ToggledKnobLight))
+                         : (isDarkMode ? color(ToggleColor::NormalKnobDark)  : color(ToggleColor::NormalKnobLight));
 
   // Outer
-  painter.setPen(BORDER);
-  painter.setBrush(BG);
+  painter.setPen(penColor);
+  painter.setBrush(brushColor);
 
   QRect rec = rect().adjusted(1, 1, -1, -1);
   painter.drawRoundedRect(rec, height() / 2, height() / 2);
 
   // Knob
   painter.setPen(Qt::NoPen);
-  painter.setBrush(KBG);
+  painter.setBrush(knobBrushColor);
   painter.save();
 
   int KH = 14;
@@ -169,6 +177,7 @@ void Toggle::enterEvent(QEnterEvent *event) {
   animation1->setStartValue(scale);
   animation1->setEndValue(1.15);
   animation1->start();
+  
   QPushButton::enterEvent(event);
   update();
 }
@@ -180,6 +189,7 @@ void Toggle::leaveEvent(QEvent *event) {
   animation1->setStartValue(scale);
   animation1->setEndValue(1.0);
   animation1->start();
+
   QPushButton::leaveEvent(event);
   update();
 }
@@ -189,6 +199,7 @@ void Toggle::mousePressEvent(QMouseEvent *event) {
     isDragging = false;
     dragStartX = event->pos().x();
     dragOffset = offset;
+
     event->accept();
     return;
   } 
@@ -208,7 +219,9 @@ void Toggle::mouseMoveEvent(QMouseEvent *event) {
       int range = width() - 8 - KW;
       qreal newOffset = dragOffset + (qreal)dx / range;
       newOffset = qBound(0.0, newOffset, 1.0);
+
       setOffset(newOffset);
+
       update();
       event->accept();
       return;
@@ -235,8 +248,10 @@ void Toggle::mouseReleaseEvent(QMouseEvent *event) {
       
       event->accept();
       return;
+
     } else {
       setChecked(!isToggled);
+
       event->accept();
       return;
     }

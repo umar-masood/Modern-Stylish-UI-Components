@@ -1,7 +1,7 @@
 #pragma once 
 #include "SmoothShadow.h"
 #include "SpinnerProgress.h"
-#include "resources/IconManager.h"
+#include "../../resources/IconManager.h"
 
 #include <QPushButton>
 #include <QPainterPath>

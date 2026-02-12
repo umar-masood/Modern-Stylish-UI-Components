@@ -14,7 +14,7 @@ class ToolTip : public QObject {
   Q_OBJECT
   
   public:
-  explicit ToolTip(QWidget *target = nullptr, const QString &text = "", QObject *parent = nullptr);
+  explicit ToolTip(QWidget *target = nullptr, const QString &text = QString(), QObject *parent = nullptr);
   void setText(const QString &text);
   void setDarkMode(bool enable);
   void setTargetWidget(QWidget *target);

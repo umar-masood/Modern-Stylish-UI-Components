@@ -15,7 +15,7 @@
 #include <QRect>
 #include <QString>
 
-#include "resources/IconManager.h"
+#include "../../resources/IconManager.h"
 
 class CheckBox : public QWidget
 {

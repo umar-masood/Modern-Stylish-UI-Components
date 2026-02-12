@@ -8,7 +8,7 @@
 #include "ScrollBar.h"
 #include "Delegate.h"
 #include "Popup.h"
-#include "resources/IconManager.h"
+#include "../../resources/IconManager.h"
 
 #include <QObject>
 #include <QEvent>
