@@ -108,6 +108,14 @@ btn->setText("");
 > [!IMPORTANT]
 > Loader will not appear unless `setText("")` is called with empty string.
 
+### Transparent Button
+```cpp
+btn->setNormalBackgroundTransparent(true));
+btn->setBorderTransparent(true);
+```
+> [!WARNING]
+> The background color and border of button will remove except pressed color.
+
 ### Font Customization
 ```cpp
 btn->setFontProperties(
