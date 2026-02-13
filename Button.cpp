@@ -383,11 +383,16 @@ void Button::drawContent(QPainter &painter, const QPixmap &pixmap) {
       if (_customSize.isValid()) {
         textW = width() - 2 * padding;
         setFixedSize(_customSize);
-      } else 
+      } else
         QPushButton::setFixedSize(buttonWidth, 36);
 
-      QRect textRect = isHyperLink ? QRect(0, 0, width(), height()) : QRect(padding, 0, textW, height());
-      painter.drawText(textRect, isHyperLink ? (Qt::AlignLeft | Qt::AlignVCenter) : (Qt::AlignCenter | Qt::TextWordWrap), text());
+      int textX = _x != 0 ? _x : (isHyperLink ? 0 : padding);
+      int textY = _y != 0 ? _y : 0;
+
+      QRect textRect = isHyperLink ? QRect(textX, textY, width(), height()) : QRect(textX, textY, textW, height());
+
+      painter.drawText( textRect, isHyperLink ? (Qt::AlignLeft | Qt::AlignVCenter) : (Qt::AlignCenter | Qt::TextWordWrap), text());
+
       break;
     }
 
@@ -521,4 +526,5 @@ void Button::leaveEvent(QEvent *event) {
 
   QPushButton::leaveEvent(event);
   update();
+
 }
