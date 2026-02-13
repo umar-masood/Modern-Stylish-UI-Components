@@ -254,7 +254,8 @@ void TextField::leaveEvent(QEvent *event) {
 }
 
 void TextField::focusInEvent(QFocusEvent *event) {
-    isFocused = true;
+    if (!isReadOnly)
+        isFocused = true;
     
     if (clear) clear->setVisible(!text().isEmpty());
 
