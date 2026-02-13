@@ -328,8 +328,8 @@ void TextField::contextMenuEvent(QContextMenuEvent *event) {
 void TextField::init() {
     setFixedSize(QSize(0, 0));
     setFocusPolicy(Qt::ClickFocus);
-    updateStyle();
     loadDefaultColors();
+    updateStyle();
     
     effect = new SmoothShadow(this);
     effect->setOffset(0, 0);
