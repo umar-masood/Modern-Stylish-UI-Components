@@ -226,7 +226,7 @@ void TextField::paintEvent(QPaintEvent *event) {
 }
 
 void TextField::keyPressEvent(QKeyEvent *event) {
-    if (!hasContextMenu && event->modifiers() & Qt::ControlModifier) {
+    if ((!hasContextMenu || isReadOnly) && event->modifiers() & Qt::ControlModifier) {
         switch(event->key()) {
             case Qt::Key_C:
             case Qt::Key_V:
@@ -286,7 +286,7 @@ void TextField::focusOutEvent(QFocusEvent *event) {
 }
 
 void TextField::contextMenuEvent(QContextMenuEvent *event) {
-    if (!hasContextMenu) 
+    if (!hasContextMenu || !isReadOnly) 
         return;
 
     menu = new Menu(this);
