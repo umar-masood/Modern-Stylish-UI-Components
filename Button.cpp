@@ -345,7 +345,7 @@ void Button::drawContent(QPainter &painter, const QPixmap &pixmap) {
       int textX = _x != 0 ? _x : iconX + iconW + spacing;
       int textY = _y != 0 ? _y : 0;
       
-      int buttonWidth = iconX + (hasRightSideIcon ? (2 * iconW + 2 * spacing) : (iconW + spacing)) + textW + 2 * spacing;
+      int buttonWidth = iconX + (hasRightSideIcon ? (2 * iconW + 2 * spacing) : (iconW + spacing)) + textW + spacing; // Remove unnecessary spacing
 
       if (!_customSize.isValid()) 
         QPushButton::setFixedSize(buttonWidth, 36);
@@ -528,3 +528,4 @@ void Button::leaveEvent(QEvent *event) {
   update();
 
 }
+
