@@ -117,7 +117,6 @@ void Switch::paintEvent(QPaintEvent *event) {
     const int spacing = 4;
     const int knobRectW = d->knobWidth;
     const int knobRectH = 14;
-
     const int knobRange = width() - (2 * spacing) - knobRectW;
     const int knobRectX = spacing + d->knobOffset * knobRange;
     const int knobRectY = rec.top() + (rec.height() - knobRectH) / 2;
@@ -132,7 +131,7 @@ void Switch::paintEvent(QPaintEvent *event) {
 }
 
 void Switch::mousePressEvent(QMouseEvent *event) {
-    if (event->button() == Qt::LeftButton)
+    if (event->button() == Qt::LeftButton) 
         setChecked(!checked());
 }
 
